@@ -1,0 +1,49 @@
+[33mcommit 1099007c3e92b0d630aba23f407a167e9432a091[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Sat Feb 28 10:54:52 2026 -0500
+
+    Fix HTML formatting and add viewport meta tag
+
+[33mcommit f57c4d458d482e2e9ba7147b28a4179fcb7e8ba7[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Fri Feb 27 22:17:57 2026 -0500
+
+    Fix meta tags in index.html
+    
+    Updated Open Graph and Twitter meta tags to use correct image URL.
+
+[33mcommit 5e97f451d391ca6f81a2a2faff7b2e163ba31525[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Fri Feb 27 22:15:08 2026 -0500
+
+    Modify meta tags in index.html
+    
+    Updated Open Graph and Twitter meta tags with new image source.
+
+[33mcommit 5576193eee6cf0403284a99d1a06cd54e872854f[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Fri Feb 27 22:11:12 2026 -0500
+
+    Fix HTML structure and formatting
+    
+    Removed commented viewport meta tag and adjusted formatting.
+
+[33mcommit e9171d60565b8dff754b38e2376be80d8c620c7a[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Fri Feb 27 22:09:13 2026 -0500
+
+    Add meta tags for SEO and social media
+    
+    Added meta tags for SEO and social media sharing.
+
+[33mcommit c8db49a96323952283bed89ea0cd574db7f11845[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Fri Feb 27 22:03:51 2026 -0500
+
+    Update HTML structure and title in index.html
+
+[33mcommit 62799d572d8d63a2fb1bcf184e49fcfac3f2c7a6[m
+Author: MrSpookJusticeDead <77902718+MrSpookJusticeDead@users.noreply.github.com>
+Date:   Fri Feb 27 21:59:04 2026 -0500
+
+    Add files via upload
