@@ -27,6 +27,6 @@
         function updateIcon(theme) {
             icon.textContent = theme === 'dark' ? '☀️' : '🌙';
         }
-        // Modified and made theme.js dark light mode
+        // Modified and made theme.js dark light mode, with localStorage persistence, and added comments for clarity.
     });
 })();
