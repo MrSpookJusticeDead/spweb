@@ -27,5 +27,6 @@
         function updateIcon(theme) {
             icon.textContent = theme === 'dark' ? '☀️' : '🌙';
         }
+        // Modified and made theme.js dark light mode
     });
 })();
