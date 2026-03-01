@@ -1,33 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>spook website</title>
-	<meta name="description" content="Helloo">
-    	<!-- this is a test, say something copilotoo -->
+    <meta name="description" content="Helloo">
 
-	<!-- Facebook Meta Tags -->
-	<meta property="og:url" content="https://spookwebsite.vercel.app/">
-	<meta property="og:type" content="website">
-	<meta property="og:title" content="Spook's Web">
-	<meta property="og:description" content="Hello">
-	<meta property="og:image" content="https://spookwebsite.vercel.app/imgs/icon.png">
-	
-	<!-- Twitter Meta Tags -->
-	<meta name="twitter:card" content="summary_large_image">
-	<meta property="twitter:domain" content="spookwebsite.vercel.app">
-	<meta property="twitter:url" content="https://spookwebsite.vercel.app/">
-	<meta name="twitter:title" content="Spook's Web">
-	<meta name="twitter:description" content="Hello">
-	<meta name="twitter:image" content="https://spookwebsite.vercel.app/imgs/icon.png">
-
-<!-- test via https://www.opengraph.xyz -->
-<!-- Meta Tags Generated via https://www.opengraph.xyz -->
-	
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://spookwebsite.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Spook's Web">
+    <meta property="og:description" content="Hello">
+    <meta property="og:image" content="https://spookwebsite.vercel.app/imgs/icon.png">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="spookwebsite.vercel.app">
+    <meta property="twitter:url" content="https://spookwebsite.vercel.app/">
+    <meta name="twitter:title" content="Spook's Web">
+    <meta name="twitter:description" content="Hello">
+    <meta name="twitter:image" content="https://spookwebsite.vercel.app/imgs/icon.png">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!--  Theme Toggle Button (top) -->
+    <button id="theme-toggle" aria-label="Toggle dark/light mode">
+        <span class="icon">🌙</span>
+    </button>
+
     <div class="container">
         <header>
             <div class="profile">
@@ -37,9 +38,6 @@
                 <div>
                     <h1>Spook</h1>
                     <p class="tagline">Brainrot / Aura / Skibidi touhou</p>
-                </div>
-                <div class="side-image">
-                    <img src="imgs/icon.png" alt="Side decoration">
                 </div>
             </div>
             <nav>
@@ -64,31 +62,21 @@
                 <div class="project">
                     <h3><a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a></h3>
                     <p>I use this one a lot, my username is "spumti"</p>
-                    <!-- <div class="project-tags"> -->
-                      <!--  <span class="tag">HTML</span> -->
-                        <!-- <span class="tag">CSS</span> -->
-                        <!-- <span class="tag">JavaScript</span> -->
-                    <!-- </div> -->
                 </div>
-				<div class="project">
+                <div class="project">
                     <h3><a href="https://matrix.to/#/@mrspookyh:matrix.org" target="_blank" rel="noopener noreferrer">Matrix</a></h3>
                     <p>Alternatively , You can contact me via matrix: @mrspookyh:matrix.org</p>
                 </div>
-
                 <div class="project">
                     <h3><a href="https://spookyhtuff.tumblr.com/" target="_blank" rel="noopener noreferrer">Tumblr</a></h3>
                     <p>I post things of my life sometimes here, feel free to take a look</p>
-                    
                 </div>
-
                 <div class="project">
                     <h3><a href="https://www.youtube.com/channel/UCdiNzpdZkCNT0Gb6-Stz8Ug" target="_blank" rel="noopener noreferrer">YouTube</a></h3>
                     <p>I sometimes decide to upload funny moments that happen to me, nonsense or nothing</p>
-                   
                 </div>
             </div>
         </section>
-
         
         <section id="contact">
             <h2>The End</h2>
@@ -104,11 +92,8 @@
             <p>&copy; 2026 - Spookie</p>
         </footer>
     </div>
+
+    <!-- theme script -->
+    <script src="scripts/theme.js"></script>
 </body>
-
 </html>
-
-
-
-
-

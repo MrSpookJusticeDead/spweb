@@ -1,3 +1,31 @@
+:root {
+    /* Light mode (default fallback) */
+    --bg: #ffffff;
+    --text: #000000;
+    --text-muted: #666666;
+    --border: #000000;
+    --accent: #ff4444;
+    --card-bg: #ffffff;
+    --card-border: #000000;
+    --tag-bg: #000000;
+    --tag-text: #ffffff;
+    --skill-bg: #f9f9f9;
+}
+
+/* Dark mode (default) */
+[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --text: #ffffff;
+    --text-muted: #aaaaaa;
+    --border: #ffffff;
+    --accent: #ff6666;
+    --card-bg: #111111;
+    --card-border: #ffffff;
+    --tag-bg: #ffffff;
+    --tag-text: #000000;
+    --skill-bg: #1a1a1a;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,11 +34,44 @@
 
 body {
     font-family: 'Courier New', monospace;
-    background: #ffffff;
-    color: #000000;
+    background: var(--bg);
+    color: var(--text);
     line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
+#theme-toggle {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    width: 45px;
+    height: 45px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 0 var(--border);
+}
+
+#theme-toggle:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--border);
+    opacity: 0.9;
+}
+
+#theme-toggle:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+/* ========== Container & Layout ========== */
 .container {
     max-width: 800px;
     margin: 0 auto;
@@ -20,7 +81,7 @@ body {
 header {
     margin-bottom: 60px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid var(--border);
 }
 
 .profile {
@@ -33,25 +94,12 @@ header {
 .avatar {
     width: 80px;
     height: 80px;
-    background: #000;
+    background: var(--border);
     border-radius: 50%;
     overflow: hidden;
 }
 
 .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.side-image {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.side-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -64,7 +112,7 @@ h1 {
 }
 
 .tagline {
-    color: #666;
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
@@ -73,7 +121,7 @@ nav {
 }
 
 nav a {
-    color: #ff4444;
+    color: var(--accent);
     text-decoration: none;
     margin-right: 20px;
     font-weight: bold;
@@ -95,7 +143,7 @@ h2 {
     font-size: 1.5rem;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid var(--border);
 }
 
 .bio {
@@ -109,33 +157,35 @@ h2 {
 }
 
 .project {
-    border: 2px solid #000;
+    border: 2px solid var(--card-border);
     padding: 30px;
+    background: var(--card-bg);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .project:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0px #000;
+    box-shadow: 4px 4px 0 var(--card-border);
 }
 
 .project a {
-    color: #000;
+    color: var(--text);
     text-decoration: underline;
     margin: 0 5px;
     font-weight: bold;
 }
 
 .project a:hover {
-    color: #ff4444;
+    color: var(--accent);
 }
+
 .project h3 {
     font-size: 1.3rem;
     margin-bottom: 10px;
 }
 
 .project p {
-    color: #555;
+    color: var(--text-muted);
     margin-bottom: 15px;
 }
 
@@ -146,8 +196,8 @@ h2 {
 }
 
 .tag {
-    background: #000;
-    color: #fff;
+    background: var(--tag-bg);
+    color: var(--tag-text);
     padding: 4px 12px;
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -161,8 +211,8 @@ h2 {
 
 .skill-item {
     padding: 15px;
-    border-left: 3px solid #ff4444;
-    background: #f9f9f9;
+    border-left: 3px solid var(--accent);
+    background: var(--skill-bg);
 }
 
 .skill-item h4 {
@@ -172,9 +222,9 @@ h2 {
 footer {
     margin-top: 80px;
     padding-top: 20px;
-    border-top: 2px solid #000;
+    border-top: 2px solid var(--border);
     text-align: center;
-    color: #666;
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
@@ -183,16 +233,17 @@ footer {
 }
 
 .social-links a {
-    color: #000;
+    color: var(--text);
     text-decoration: underline;
     margin: 0 15px;
     font-weight: bold;
 }
 
 .social-links a:hover {
-    color: #ff4444;
+    color: var(--accent);
 }
 
+/* ========== Mobile Responsive ========== */
 @media (max-width: 600px) {
     h1 {
         font-size: 2rem;
@@ -211,5 +262,21 @@ footer {
     
     nav a {
         margin-right: 0;
+    }
+
+    /* Adjust toggle position on mobile */
+    #theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+/* ========== Motion Preference ========== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
     }
 }
