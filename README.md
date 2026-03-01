@@ -22,8 +22,9 @@ This is a basic website built with HTML, CSS, and JavaScript.
 ## Technologies Used
 
 - HTML5
-- CSS3
+- CSS
 - JavaScript
+- SigmaScript
 
 ## Contributing
 
