@@ -15,13 +15,26 @@
         return
     }
 
-    // ── Nav: swap "Log In" link for "Signed in" indicator ────────────────────
-    const navLogin = document.getElementById('nav-login')
-    const navUser  = document.getElementById('nav-user')
+    // ── Fetch username from profiles table ───────────────────────────────────
+    let username = null
+    if (user) {
+        const { data: profile } = await sb
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .maybeSingle()
+        username = profile?.username ?? null
+    }
+
+    // ── Nav: swap "Log In" link for username indicator ────────────────────────
+    const navLogin    = document.getElementById('nav-login')
+    const navUser     = document.getElementById('nav-user')
+    const navUsername = document.getElementById('nav-username')
 
     if (user) {
         if (navLogin) navLogin.style.display = 'none'
         if (navUser)  navUser.style.display  = 'inline-flex'
+        if (navUsername) navUsername.textContent = username ?? 'Signed in'
 
         const logoutBtn = document.getElementById('nav-logout')
         if (logoutBtn) {
@@ -43,5 +56,9 @@
     // ── Hide "Sign up" section on index when logged in ───────────────────────
     const signupCard = document.getElementById('index-signup-card')
     if (signupCard && user) signupCard.style.display = 'none'
+
+    // ── Expose username globally so upload.html can use it ───────────────────
+    window._authUser     = user
+    window._authUsername = username
 
 })()

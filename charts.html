@@ -9,72 +9,117 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scripts/config.js"></script>
     <style>
-        .chart-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-        .chart-card {
-            border: 2px solid var(--card-border);
-            background: var(--card-bg);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text);
+        /* ── Horizontal list layout ── */
+        .chart-list {
             display: flex;
             flex-direction: column;
+            gap: 0;
         }
-        .chart-card:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 5px 5px 0 var(--card-border);
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text);
+            transition: background 0.15s;
         }
-        .chart-cover {
-            width: 100%;
-            aspect-ratio: 1;
+
+        .chart-row:first-child { border-top: 1px solid var(--border); }
+
+        .chart-row:hover { background: var(--skill-bg); margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
+
+        .chart-thumb {
+            width: 56px;
+            height: 56px;
             object-fit: cover;
+            border: 2px solid var(--card-border);
+            flex-shrink: 0;
             display: block;
             background: var(--skill-bg);
-            border-bottom: 2px solid var(--card-border);
         }
-        .chart-cover-placeholder {
-            width: 100%;
-            aspect-ratio: 1;
-            background: var(--skill-bg);
-            border-bottom: 2px solid var(--card-border);
+
+        .chart-thumb-placeholder {
+            width: 56px;
+            height: 56px;
+            border: 2px solid var(--card-border);
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 1.4rem;
+            background: var(--skill-bg);
         }
-        .chart-info {
-            padding: 16px;
+
+        .chart-meta {
             flex: 1;
+            min-width: 0;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
+
         .chart-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .chart-artist {
-            font-size: 0.85rem;
+
+        .chart-sub {
+            font-size: 0.8rem;
             color: var(--text-muted);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .chart-by {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .chart-by span {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .chart-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
         .chart-bpm {
-            margin-top: 8px;
             font-size: 0.75rem;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--accent);
         }
+
+        .chart-dl {
+            padding: 5px 10px;
+            border: 2px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+        .chart-dl:hover { background: var(--border); color: var(--bg); }
+
+        /* search */
         #search {
             width: 100%;
             padding: 12px;
@@ -85,65 +130,23 @@
             font-size: 1rem;
             outline: none;
             transition: border-color 0.2s;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
         #search:focus { border-color: var(--accent); }
+
         .state-msg {
             text-align: center;
             color: var(--text-muted);
-            padding: 60px 0;
+            padding: 40px 0;
             font-size: 1rem;
-            grid-column: 1 / -1;
         }
-        .chart-dl {
-            display: block;
-            margin: 0 16px 16px;
-            padding: 8px;
-            text-align: center;
-            border: 2px solid var(--border);
-            color: var(--text);
-            font-family: inherit;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
-            transition: background 0.15s, color 0.15s;
-        }
-        .chart-dl:hover { background: var(--border); color: var(--bg); }
 
         /* Auth nav */
-        #nav-user {
-            display: none;
-            align-items: center;
-            gap: 8px;
-        }
-        .nav-avatar {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            background: var(--card-bg);
-        }
-        .nav-signed-label {
-            color: var(--text);
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-        #nav-logout {
-            color: var(--accent);
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        #nav-logout:hover { opacity: 0.7; text-decoration: underline; }
+        #nav-user { display: none; align-items: center; gap: 8px; }
+        .nav-avatar { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.7rem; background:var(--card-bg); }
+        .nav-signed-label { color:var(--text); font-weight:bold; text-transform:uppercase; font-size:0.9rem; }
+        #nav-logout { color:var(--accent); font-weight:bold; text-transform:uppercase; font-size:0.9rem; text-decoration:none; transition:opacity 0.2s; }
+        #nav-logout:hover { opacity:0.7; text-decoration:underline; }
     </style>
 </head>
 <body>
@@ -155,9 +158,7 @@
 <div class="container">
     <header>
         <div class="profile">
-            <div class="avatar">
-                <img src="imgs/icon.png" alt="Profile">
-            </div>
+            <div class="avatar"><img src="imgs/icon.png" alt="Profile"></div>
             <div>
                 <h1>Charts</h1>
                 <p class="tagline">Community beatmaps for Move it!</p>
@@ -167,12 +168,10 @@
             <a href="/index.html">Home</a>
             <a href="/charts.html" style="color:var(--text);">Browse</a>
             <a href="/upload.html">Publish</a>
-            <!-- shown when logged out -->
             <a href="/login.html" id="nav-login">Log In</a>
-            <!-- shown when logged in -->
             <span id="nav-user">
                 <span class="nav-avatar">👤</span>
-                <span class="nav-signed-label">Signed in</span>
+                <span class="nav-signed-label" id="nav-username">Signed in</span>
                 <a href="#" id="nav-logout">Log Out</a>
             </span>
         </nav>
@@ -180,12 +179,12 @@
 
     <section>
         <input id="search" type="search" placeholder="Search by title or artist…" aria-label="Search charts">
-        <div class="chart-grid" id="chart-grid">
+        <div id="chart-list">
             <p class="state-msg" id="status-msg">Loading charts…</p>
         </div>
     </section>
 
-    <section style="margin-top:20px;">
+    <section style="margin-top:40px;">
         <div class="projects" style="grid-template-columns:1fr 1fr;">
             <div class="project" id="card-create-account">
                 <h3>Publish a Chart</h3>
@@ -194,7 +193,7 @@
             </div>
             <div class="project">
                 <h3>About Move it!</h3>
-                <p>Charts are beatmaps used in my  "Move it!"" rhythm game.</p>
+                <p>Charts are beatmaps used in the "Move it!" rhythm game.</p>
                 <a href="/" style="color:var(--accent);">Learn More →</a>
             </div>
         </div>
@@ -214,7 +213,7 @@
     const { createClient } = supabase
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    const grid   = document.getElementById('chart-grid')
+    const list   = document.getElementById('chart-list')
     const status = document.getElementById('status-msg')
     const search = document.getElementById('search')
     let allCharts = []
@@ -231,43 +230,68 @@
             .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
     }
 
-    function renderCards(charts) {
-        grid.innerHTML = ''
-        if (charts.length === 0) { grid.innerHTML = '<p class="state-msg">No charts found.</p>'; return }
+    function renderList(charts) {
+        list.innerHTML = ''
+        if (charts.length === 0) {
+            list.innerHTML = '<p class="state-msg">No charts found.</p>'
+            return
+        }
+
+        const container = document.createElement('div')
+        container.className = 'chart-list'
+
         charts.forEach(chart => {
             const coverUrl = getPublicUrl(chart.cover_url)
             const jsonUrl  = getPublicUrl(chart.json_url)
+            // username from joined profiles, fallback to "anonymous"
+            const username = chart.profiles?.username ?? 'anonymous'
             const uploaded = chart.created_at
                 ? new Date(chart.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })
                 : ''
-            const card = document.createElement('div')
-            card.className = 'chart-card'
-            card.innerHTML = `
-                ${coverUrl ? `<img class="chart-cover" src="${coverUrl}" alt="${escHtml(chart.title)} cover" loading="lazy">` : `<div class="chart-cover-placeholder">🎵</div>`}
-                <div class="chart-info">
-                    <div class="chart-title" title="${escHtml(chart.title)}">${escHtml(chart.title)}</div>
-                    <div class="chart-artist">${escHtml(chart.artist)}</div>
-                    ${chart.bpm ? `<div class="chart-bpm">${chart.bpm} BPM</div>` : ''}
-                    ${uploaded ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">${uploaded}</div>` : ''}
+
+            const row = document.createElement('div')
+            row.className = 'chart-row'
+            row.innerHTML = `
+                ${coverUrl
+                    ? `<img class="chart-thumb" src="${escHtml(coverUrl)}" alt="${escHtml(chart.title)}" loading="lazy">`
+                    : `<div class="chart-thumb-placeholder">🎵</div>`}
+                <div class="chart-meta">
+                    <div class="chart-title">${escHtml(chart.title)}</div>
+                    <div class="chart-sub">${escHtml(chart.artist)}</div>
+                    <div class="chart-by">by <span>${escHtml(username)}</span>${uploaded ? ` · ${uploaded}` : ''}</div>
                 </div>
-                ${jsonUrl ? `<a class="chart-dl" href="${jsonUrl}" download="${escHtml(chart.title)}.json">↓ Download JSON</a>` : ''}
+                <div class="chart-right">
+                    ${chart.bpm ? `<div class="chart-bpm">${chart.bpm} BPM</div>` : ''}
+                    ${jsonUrl ? `<a class="chart-dl" href="${escHtml(jsonUrl)}" download="${escHtml(chart.title)}.json">↓ JSON</a>` : ''}
+                </div>
             `
-            grid.appendChild(card)
+            container.appendChild(row)
         })
+
+        list.appendChild(container)
     }
 
     async function loadCharts() {
-        const { data, error } = await sb.from('charts').select('*').order('created_at', { ascending: false })
-        if (error) { status.textContent = '✗ Failed to load charts: ' + error.message; return }
+        // Join profiles to get username
+        const { data, error } = await sb
+            .from('charts')
+            .select('*, profiles(username)')
+            .order('created_at', { ascending: false })
+
+        if (error) {
+            if (status) status.textContent = '✗ Failed to load charts: ' + error.message
+            return
+        }
         allCharts = data ?? []
-        grid.innerHTML = ''
-        renderCards(allCharts)
+        list.innerHTML = ''
+        renderList(allCharts)
     }
 
     search.addEventListener('input', () => {
         const q = search.value.toLowerCase().trim()
-        renderCards(q ? allCharts.filter(c =>
-            (c.title ?? '').toLowerCase().includes(q) || (c.artist ?? '').toLowerCase().includes(q)
+        renderList(q ? allCharts.filter(c =>
+            (c.title ?? '').toLowerCase().includes(q) ||
+            (c.artist ?? '').toLowerCase().includes(q)
         ) : allCharts)
     })
 

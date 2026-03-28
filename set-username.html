@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Username | Spook</title>
+    <link rel="icon" type="image/png" href="imgs/icon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/config.js"></script>
+</head>
+<body>
+
+<button id="theme-toggle" aria-label="Toggle dark/light mode">
+    <span class="icon">🌙</span>
+</button>
+
+<div class="container" style="max-width:440px; padding-top:80px; padding-bottom:80px;">
+
+    <header style="margin-bottom:40px; padding-bottom:20px; border-bottom:2px solid var(--border);">
+        <h1 style="font-size:2rem; letter-spacing:-1px;">Choose a Username</h1>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">
+            Your account was created before usernames were added. Pick one to continue.
+        </p>
+    </header>
+
+    <div style="display:flex; flex-direction:column; gap:16px;">
+        <div>
+            <label for="username" style="display:block; font-size:0.8rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:var(--text-muted);">Username *</label>
+            <input id="username" type="text" placeholder="e.g. spook" maxlength="30"
+                style="width:100%; padding:12px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); font-family:inherit; font-size:1rem; outline:none;"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--border)'"
+                onkeydown="if(event.key==='Enter') document.getElementById('btn-save').click()">
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Letters, numbers, underscores only.</p>
+        </div>
+
+        <button id="btn-save"
+            style="padding:14px; background:var(--border); color:var(--bg); font-family:inherit; font-size:1rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; border:2px solid var(--border); cursor:pointer; box-shadow:3px 3px 0 var(--accent);">
+            Save Username
+        </button>
+
+        <p id="msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em;"></p>
+    </div>
+</div>
+
+<script src="scripts/theme.js"></script>
+<script>
+    const { createClient } = supabase
+    const sb  = createClient(SUPABASE_URL, SUPABASE_KEY)
+    const msg = document.getElementById('msg')
+
+    // Must be logged in
+    sb.auth.getUser().then(({ data: { user } }) => {
+        if (!user) { location.href = '/login.html'; return }
+
+        // If they already have a username, redirect away
+        sb.from('profiles').select('username').eq('id', user.id).maybeSingle().then(({ data }) => {
+            if (data?.username) location.href = '/upload.html'
+        })
+    })
+
+    document.getElementById('btn-save').onclick = async () => {
+        const btn      = document.getElementById('btn-save')
+        const username = document.getElementById('username').value.trim()
+        const { data: { user } } = await sb.auth.getUser()
+
+        if (!user)                               { location.href = '/login.html'; return }
+        if (!username)                           { msg.textContent = '✗ Please enter a username.'; return }
+        if (!/^[a-zA-Z0-9_]+$/.test(username))  { msg.textContent = '✗ Letters, numbers and underscores only.'; return }
+        if (username.length < 2)                 { msg.textContent = '✗ At least 2 characters.'; return }
+
+        // Check taken
+        const { data: existing } = await sb.from('profiles').select('id').eq('username', username).maybeSingle()
+        if (existing) { msg.textContent = '✗ That username is already taken.'; return }
+
+        btn.disabled = true; btn.textContent = 'Saving…'
+
+        const { error } = await sb.from('profiles').insert({ id: user.id, username })
+
+        if (error) {
+            msg.textContent = '✗ ' + error.message
+            btn.disabled = false; btn.textContent = 'Save Username'
+            return
+        }
+
+        msg.style.color = '#66ff99'
+        msg.textContent = '✓ Username saved! Redirecting…'
+        setTimeout(() => { location.href = '/upload.html' }, 900)
+    }
+</script>
+</body>
+</html>

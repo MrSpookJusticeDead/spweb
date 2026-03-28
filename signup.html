@@ -26,6 +26,15 @@
     <div style="display:flex; flex-direction:column; gap:16px;">
 
         <div>
+            <label for="username" style="display:block; font-size:0.8rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:var(--text-muted);">Username *</label>
+            <input id="username" type="text" placeholder="e.g. spook" maxlength="30"
+                style="width:100%; padding:12px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); font-family:inherit; font-size:1rem; outline:none; transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--border)'">
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Letters, numbers, underscores only. This is what others will see.</p>
+        </div>
+
+        <div>
             <label for="email" style="display:block; font-size:0.8rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:var(--text-muted);">Email</label>
             <input id="email" type="email" placeholder="you@example.com"
                 style="width:100%; padding:12px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); font-family:inherit; font-size:1rem; outline:none; transition:border-color 0.2s;"
@@ -66,33 +75,31 @@
 </div>
 
 <script src="scripts/theme.js"></script>
-<script src="scripts/auth-nav.js"></script><!-- redirects away if already logged in -->
+<script src="scripts/auth-nav.js"></script>
 <script>
     const { createClient } = supabase
-    const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+    const sb  = createClient(SUPABASE_URL, SUPABASE_KEY)
     const msg = document.getElementById('msg')
 
-    // Keywords that indicate a duplicate account error from Supabase
-    const DUPE_PHRASES = [
-        'user already registered',
-        'already been registered',
-        'already exists',
-        'email address is already',
-        'already in use',
-    ]
-
-    function isDuplicateError(message) {
-        const lower = (message ?? '').toLowerCase()
-        return DUPE_PHRASES.some(p => lower.includes(p))
-    }
+    const DUPE_PHRASES = ['user already registered','already been registered','already exists','email address is already','already in use']
+    function isDuplicateError(m) { return DUPE_PHRASES.some(p => (m??'').toLowerCase().includes(p)) }
 
     document.getElementById('btn-signup').onclick = async () => {
         const btn      = document.getElementById('btn-signup')
+        const username = document.getElementById('username').value.trim()
         const email    = document.getElementById('email').value.trim()
         const password = document.getElementById('password').value
 
-        if (!email || !password) { msg.textContent = '✗ Please fill in all fields.'; return }
-        if (password.length < 6) { msg.textContent = '✗ Password must be at least 6 characters.'; return }
+        // Validation
+        if (!username)                        { msg.textContent = '✗ Please choose a username.'; return }
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) { msg.textContent = '✗ Username can only contain letters, numbers and underscores.'; return }
+        if (username.length < 2)              { msg.textContent = '✗ Username must be at least 2 characters.'; return }
+        if (!email || !password)              { msg.textContent = '✗ Please fill in all fields.'; return }
+        if (password.length < 6)             { msg.textContent = '✗ Password must be at least 6 characters.'; return }
+
+        // Check username taken
+        const { data: existing } = await sb.from('profiles').select('id').eq('username', username).maybeSingle()
+        if (existing) { msg.textContent = '✗ That username is already taken.'; return }
 
         btn.textContent = 'Creating account…'
         btn.disabled    = true
@@ -102,22 +109,20 @@
         const { data, error } = await sb.auth.signUp({ email, password })
 
         if (error) {
-            // Friendly duplicate-account message
             msg.textContent = isDuplicateError(error.message)
-                ? '✗ An account with these credentials already exists! Try logging in instead.'
+                ? '✗ An account with this email already exists. Try logging in.'
                 : '✗ ' + error.message
-            btn.textContent = 'Sign Up'
-            btn.disabled    = false
-            return
+            btn.textContent = 'Sign Up'; btn.disabled = false; return
         }
 
-        // Supabase may return success even for existing emails (depends on settings).
-        // If identities array is empty, the email is already taken.
         if (data?.user && data.user.identities && data.user.identities.length === 0) {
-            msg.textContent = '✗ An account with these credentials already exists! Try logging in instead.'
-            btn.textContent = 'Sign Up'
-            btn.disabled    = false
-            return
+            msg.textContent = '✗ An account with this email already exists. Try logging in.'
+            btn.textContent = 'Sign Up'; btn.disabled = false; return
+        }
+
+        // Insert profile row with username
+        if (data?.user) {
+            await sb.from('profiles').insert({ id: data.user.id, username })
         }
 
         msg.style.color = '#66ff99'
