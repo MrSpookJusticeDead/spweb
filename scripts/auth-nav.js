@@ -49,6 +49,10 @@
         if (navUser)  navUser.style.display  = 'none'
     }
 
+    const about_card = document.getElementById('card-aboutgame')
+    if (about_card) about_card.style.display = "none"
+
+
     // ── Hide "Create Account" card when already logged in ────────────────────
     const createCard = document.getElementById('card-create-account')
     if (createCard && user) createCard.style.display = 'none'
