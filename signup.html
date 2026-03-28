@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up | Spook</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="container" style="max-width:400px; padding-top:80px;">
+    <h1 style="margin-bottom:30px;">Create Account</h1>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+        <input id="email" type="email" placeholder="Email" 
+            style="padding:10px;background:var(--card-bg);border:2px solid var(--border);color:var(--text);font-family:inherit;">
+        <input id="password" type="password" placeholder="Password"
+            style="padding:10px;background:var(--card-bg);border:2px solid var(--border);color:var(--text);font-family:inherit;">
+        <button id="btn-signup"
+            style="padding:10px;background:var(--border);color:var(--bg);font-family:inherit;font-weight:bold;border:none;cursor:pointer;">
+            Sign Up
+        </button>
+        <p style="color:var(--text-muted);font-size:0.85rem;">
+            Already have an account? <a href="/login.html" style="color:var(--accent)">Log in</a>
+        </p>
+        <p id="msg" style="color:var(--accent);font-size:0.85rem;"></p>
+    </div>
+</div>
+<script>
+    const { createClient } = supabase
+    const sb = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY')
+
+    document.getElementById('btn-signup').onclick = async () => {
+        const email    = document.getElementById('email').value
+        const password = document.getElementById('password').value
+        const { error } = await sb.auth.signUp({ email, password })
+        document.getElementById('msg').textContent = error
+            ? error.message
+            : 'Check your email to confirm your account!'
+    }
+</script>
+</body>
+</html>

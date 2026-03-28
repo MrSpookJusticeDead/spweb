@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,7 @@
     <meta property="og:title" content="Spook's Web">
     <meta property="og:description" content="Hello">
     <meta property="og:image" content="https://spookwebsite.vercel.app/imgs/icon.png">
-    
+
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="spookwebsite.vercel.app">
@@ -24,9 +25,10 @@
     <meta name="twitter:title" content="Spook's Web">
     <meta name="twitter:description" content="Hello">
     <meta name="twitter:image" content="https://spookwebsite.vercel.app/imgs/icon.png">
-    
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!--  Theme Toggle Button (top) -->
     <button id="theme-toggle" aria-label="Toggle dark/light mode">
@@ -48,6 +50,7 @@
                 <a href="#about">About</a>
                 <a href="#projects">Social Media</a>
                 <a href="#contact">Contact</a>
+                <a href="#charts">Charts</a>
             </nav>
         </header>
 
@@ -64,24 +67,47 @@
             <h2>Social Media</h2>
             <div class="projects">
                 <div class="project">
-                    <h3><a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a></h3>
+                    <h3><a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a>
+                    </h3>
                     <p>I use this one a lot, my username is "spumti"</p>
                 </div>
                 <div class="project">
-                    <h3><a href="https://matrix.to/#/@mrspookyh:matrix.org" target="_blank" rel="noopener noreferrer">Matrix</a></h3>
+                    <h3><a href="https://matrix.to/#/@mrspookyh:matrix.org" target="_blank"
+                            rel="noopener noreferrer">Matrix</a></h3>
                     <p>Alternatively , You can contact me via matrix: @mrspookyh:matrix.org</p>
                 </div>
                 <div class="project">
-                    <h3><a href="https://spookyhtuff.tumblr.com/" target="_blank" rel="noopener noreferrer">Tumblr</a></h3>
+                    <h3><a href="https://spookyhtuff.tumblr.com/" target="_blank" rel="noopener noreferrer">Tumblr</a>
+                    </h3>
                     <p>I post things of my life sometimes here, feel free to take a look</p>
                 </div>
                 <div class="project">
-                    <h3><a href="https://www.youtube.com/channel/UCdiNzpdZkCNT0Gb6-Stz8Ug" target="_blank" rel="noopener noreferrer">YouTube</a></h3>
+                    <h3><a href="https://www.youtube.com/channel/UCdiNzpdZkCNT0Gb6-Stz8Ug" target="_blank"
+                            rel="noopener noreferrer">YouTube</a></h3>
                     <p>I sometimes decide to upload funny moments that happen to me, nonsense or nothing</p>
                 </div>
             </div>
         </section>
-        
+
+        <section id="charts">
+            <h2>Charts</h2>
+            <div class="bio">
+                <p>Community-made beatmaps for Move it! — create an account to publish your own charts.</p>
+            </div>
+            <div class="projects" style="margin-top: 20px;">
+                <div class="project">
+                    <h3>📁 Browse Charts</h3>
+                    <p>Explore charts made by the community.</p>
+                    <a href="/charts" style="color:var(--accent)">Browse →</a>
+                </div>
+                <div class="project">
+                    <h3>✏️ Publish a Chart</h3>
+                    <p>Create an account and upload your own beatmap JSON.</p>
+                    <a href="/signup" style="color:var(--accent)">Create Account →</a>
+                </div>
+            </div>
+        </section>
+
         <section id="contact">
             <h2>The End</h2>
             <div class="bio">
@@ -100,4 +126,5 @@
     <!-- theme script -->
     <script src="scripts/theme.js"></script>
 </body>
+
 </html>

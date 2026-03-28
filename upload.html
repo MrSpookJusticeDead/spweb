@@ -1,0 +1,36 @@
+<!-- key fields -->
+<input id="title"    placeholder="Song title">
+<input id="artist"   placeholder="Artist">
+<input id="bpm"      type="number" placeholder="BPM">
+<input id="cover"    type="file" accept="image/*">
+<input id="json"     type="file" accept=".json">
+<button id="submit">Publish Chart</button>
+
+<script>
+document.getElementById('submit').onclick = async () => {
+    const user = (await sb.auth.getUser()).data.user
+    if (!user) { location.href = '/login.html'; return }
+
+    // Upload cover image to Supabase Storage
+    const cover = document.getElementById('cover').files[0]
+    const { data: coverData } = await sb.storage
+        .from('charts').upload(`covers/${Date.now()}_${cover.name}`, cover)
+
+    // Upload JSON file
+    const json = document.getElementById('json').files[0]
+    const { data: jsonData } = await sb.storage
+        .from('charts').upload(`jsons/${Date.now()}_${json.name}`, json)
+
+    // Insert chart record
+    await sb.from('charts').insert({
+        user_id:   user.id,
+        title:     document.getElementById('title').value,
+        artist:    document.getElementById('artist').value,
+        bpm:       parseInt(document.getElementById('bpm').value),
+        cover_url: coverData.path,
+        json_url:  jsonData.path,
+    })
+
+    alert('Chart published!')
+}
+</script>
