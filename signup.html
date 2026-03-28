@@ -2,39 +2,105 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | Spook</title>
+    <link rel="icon" type="image/png" href="imgs/icon.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="container" style="max-width:400px; padding-top:80px;">
-    <h1 style="margin-bottom:30px;">Create Account</h1>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-        <input id="email" type="email" placeholder="Email" 
-            style="padding:10px;background:var(--card-bg);border:2px solid var(--border);color:var(--text);font-family:inherit;">
-        <input id="password" type="password" placeholder="Password"
-            style="padding:10px;background:var(--card-bg);border:2px solid var(--border);color:var(--text);font-family:inherit;">
+
+<button id="theme-toggle" aria-label="Toggle dark/light mode">
+    <span class="icon">🌙</span>
+</button>
+
+<div class="container" style="max-width:440px; padding-top:80px; padding-bottom:80px;">
+
+    <header style="margin-bottom:40px; padding-bottom:20px; border-bottom:2px solid var(--border);">
+        <a href="/index.html" style="color:var(--text-muted); text-decoration:none; font-size:0.85rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">← Back to Home</a>
+        <h1 style="margin-top:20px; font-size:2rem; letter-spacing:-1px;">Create Account</h1>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">Join to publish your own charts.</p>
+    </header>
+
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <div>
+            <label for="email" style="display:block; font-size:0.8rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:var(--text-muted);">Email</label>
+            <input id="email" type="email" placeholder="you@example.com"
+                style="width:100%; padding:12px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); font-family:inherit; font-size:1rem; outline:none; transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--border)'">
+        </div>
+
+        <div>
+            <label for="password" style="display:block; font-size:0.8rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:var(--text-muted);">Password</label>
+            <input id="password" type="password" placeholder="••••••••"
+                style="width:100%; padding:12px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); font-family:inherit; font-size:1rem; outline:none; transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--border)'"
+                onkeydown="if(event.key==='Enter') document.getElementById('btn-signup').click()">
+        </div>
+
         <button id="btn-signup"
-            style="padding:10px;background:var(--border);color:var(--bg);font-family:inherit;font-weight:bold;border:none;cursor:pointer;">
+            style="padding:14px; background:var(--border); color:var(--bg); font-family:inherit; font-size:1rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px; border:2px solid var(--border); cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; box-shadow:3px 3px 0 var(--accent);"
+            onmouseover="this.style.transform='translate(-2px,-2px)'; this.style.boxShadow='5px 5px 0 var(--accent)'"
+            onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='3px 3px 0 var(--accent)'"
+            onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
+            onmouseup="this.style.transform='translate(-2px,-2px)'; this.style.boxShadow='5px 5px 0 var(--accent)'">
             Sign Up
         </button>
-        <p style="color:var(--text-muted);font-size:0.85rem;">
-            Already have an account? <a href="/login.html" style="color:var(--accent)">Log in</a>
-        </p>
-        <p id="msg" style="color:var(--accent);font-size:0.85rem;"></p>
+
+        <p id="msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em;"></p>
+
+        <div style="border-top:1px solid var(--border); padding-top:16px; display:flex; flex-direction:column; gap:8px;">
+            <p style="color:var(--text-muted); font-size:0.85rem;">
+                Already have an account? <a href="/login.html" style="color:var(--accent); font-weight:bold;">Log in →</a>
+            </p>
+            <p style="color:var(--text-muted); font-size:0.85rem;">
+                Just browsing? <a href="/charts.html" style="color:var(--text); font-weight:bold; text-decoration:underline;">View charts →</a>
+            </p>
+        </div>
+
     </div>
 </div>
+
+<script src="scripts/theme.js"></script>
 <script>
     const { createClient } = supabase
     const sb = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY')
 
+    const msg = document.getElementById('msg')
+
     document.getElementById('btn-signup').onclick = async () => {
-        const email    = document.getElementById('email').value
+        const btn      = document.getElementById('btn-signup')
+        const email    = document.getElementById('email').value.trim()
         const password = document.getElementById('password').value
+
+        if (!email || !password) {
+            msg.textContent = '✗ Please fill in all fields.'
+            return
+        }
+
+        if (password.length < 6) {
+            msg.textContent = '✗ Password must be at least 6 characters.'
+            return
+        }
+
+        btn.textContent = 'Creating account…'
+        btn.disabled    = true
+
         const { error } = await sb.auth.signUp({ email, password })
-        document.getElementById('msg').textContent = error
-            ? error.message
-            : 'Check your email to confirm your account!'
+
+        if (error) {
+            msg.textContent = '✗ ' + error.message
+            btn.textContent = 'Sign Up'
+            btn.disabled    = false
+        } else {
+            msg.style.color = '#66ff99'
+            msg.textContent = '✓ Check your email to confirm your account!'
+            btn.textContent = 'Sign Up'
+            btn.disabled    = false
+        }
     }
 </script>
 </body>
