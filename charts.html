@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts | Spook</title>
+    <link rel="icon" type="image/png" href="imgs/icon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Chart grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-card {
+            border: 2px solid var(--card-border);
+            background: var(--card-bg);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 5px 5px 0 var(--card-border);
+        }
+
+        .chart-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+            background: var(--skill-bg);
+            border-bottom: 2px solid var(--card-border);
+        }
+
+        .chart-cover-placeholder {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--skill-bg);
+            border-bottom: 2px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .chart-info {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chart-artist {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chart-bpm {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        /* Search bar */
+        #search {
+            width: 100%;
+            padding: 12px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 30px;
+        }
+
+        #search:focus {
+            border-color: var(--accent);
+        }
+
+        /* Empty / loading states */
+        .state-msg {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 60px 0;
+            font-size: 1rem;
+            grid-column: 1 / -1;
+        }
+
+        /* Download button on card */
+        .chart-dl {
+            display: block;
+            margin: 0 16px 16px;
+            padding: 8px;
+            text-align: center;
+            border: 2px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .chart-dl:hover {
+            background: var(--border);
+            color: var(--bg);
+        }
+    </style>
+</head>
+<body>
+
+<button id="theme-toggle" aria-label="Toggle dark/light mode">
+    <span class="icon">🌙</span>
+</button>
+
+<div class="container">
+
+    <header>
+        <div class="profile">
+            <div class="avatar">
+                <img src="imgs/icon.png" alt="Profile">
+            </div>
+            <div>
+                <h1>Charts</h1>
+                <p class="tagline">Community beatmaps for Move it!</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/charts.html" style="color:var(--text);">Browse</a>
+            <a href="/upload.html">Publish</a>
+            <a href="/login.html">Log In</a>
+        </nav>
+    </header>
+
+    <section>
+        <input id="search" type="search" placeholder="Search by title or artist…" aria-label="Search charts">
+
+        <div class="chart-grid" id="chart-grid">
+            <p class="state-msg" id="status-msg">Loading charts…</p>
+        </div>
+    </section>
+
+    <section style="margin-top:20px;">
+        <div class="projects" style="grid-template-columns:1fr 1fr;">
+            <div class="project">
+                <h3>✏️ Publish a Chart</h3>
+                <p>Create an account and upload your own beatmap JSON.</p>
+                <a href="/signup.html" style="color:var(--accent);">Create Account →</a>
+            </div>
+            <div class="project">
+                <h3>🎮 About Move it!</h3>
+                <p>Charts are beatmaps used in the Move it! rhythm game.</p>
+                <a href="/" style="color:var(--accent);">Learn More →</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a>
+        </div>
+        <p>&copy; 2026 - Spookie</p>
+    </footer>
+
+</div>
+
+<script src="scripts/theme.js"></script>
+<script>
+    const { createClient } = supabase
+    const sb = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY')
+
+    const grid   = document.getElementById('chart-grid')
+    const status = document.getElementById('status-msg')
+    const search = document.getElementById('search')
+
+    let allCharts = []
+
+    function getPublicUrl(path) {
+        if (!path) return null
+        const { data } = sb.storage.from('charts').getPublicUrl(path)
+        return data.publicUrl
+    }
+
+    function renderCards(charts) {
+        grid.innerHTML = ''
+
+        if (charts.length === 0) {
+            grid.innerHTML = '<p class="state-msg">No charts found.</p>'
+            return
+        }
+
+        charts.forEach(chart => {
+            const coverUrl  = getPublicUrl(chart.cover_url)
+            const jsonUrl   = getPublicUrl(chart.json_url)
+            const uploaded  = chart.created_at
+                ? new Date(chart.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })
+                : ''
+
+            const card = document.createElement('div')
+            card.className = 'chart-card'
+
+            card.innerHTML = `
+                ${coverUrl
+                    ? `<img class="chart-cover" src="${coverUrl}" alt="${escHtml(chart.title)} cover" loading="lazy">`
+                    : `<div class="chart-cover-placeholder">🎵</div>`
+                }
+                <div class="chart-info">
+                    <div class="chart-title" title="${escHtml(chart.title)}">${escHtml(chart.title)}</div>
+                    <div class="chart-artist">${escHtml(chart.artist)}</div>
+                    ${chart.bpm ? `<div class="chart-bpm">${chart.bpm} BPM</div>` : ''}
+                    ${uploaded ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">${uploaded}</div>` : ''}
+                </div>
+                ${jsonUrl
+                    ? `<a class="chart-dl" href="${jsonUrl}" download="${escHtml(chart.title)}.json">↓ Download JSON</a>`
+                    : ''
+                }
+            `
+
+            grid.appendChild(card)
+        })
+    }
+
+    function escHtml(str) {
+        return String(str ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+    }
+
+    async function loadCharts() {
+        const { data, error } = await sb
+            .from('charts')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+        if (error) {
+            status.textContent = '✗ Failed to load charts: ' + error.message
+            return
+        }
+
+        allCharts = data ?? []
+        grid.innerHTML = ''
+        renderCards(allCharts)
+    }
+
+    search.addEventListener('input', () => {
+        const q = search.value.toLowerCase().trim()
+        if (!q) {
+            renderCards(allCharts)
+            return
+        }
+        const filtered = allCharts.filter(c =>
+            (c.title  ?? '').toLowerCase().includes(q) ||
+            (c.artist ?? '').toLowerCase().includes(q)
+        )
+        renderCards(filtered)
+    })
+
+    loadCharts()
+</script>
+</body>
+</html>

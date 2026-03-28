@@ -1,36 +1,405 @@
-<!-- key fields -->
-<input id="title"    placeholder="Song title">
-<input id="artist"   placeholder="Artist">
-<input id="bpm"      type="number" placeholder="BPM">
-<input id="cover"    type="file" accept="image/*">
-<input id="json"     type="file" accept=".json">
-<button id="submit">Publish Chart</button>
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Chart | Spook</title>
+    <link rel="icon" type="image/png" href="imgs/icon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Field groups */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
 
+        .field label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .field input[type="text"],
+        .field input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .field input[type="text"]:focus,
+        .field input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+
+        /* File drop zones */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--skill-bg);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone .dz-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone .dz-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .drop-zone .dz-chosen {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* Cover preview */
+        #cover-preview {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border: 2px solid var(--border);
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Publish button */
+        #btn-publish {
+            width: 100%;
+            padding: 16px;
+            background: var(--border);
+            color: var(--bg);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 3px 3px 0 var(--accent);
+        }
+
+        #btn-publish:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0 var(--accent);
+        }
+
+        #btn-publish:active:not(:disabled) {
+            transform: translate(1px, 1px);
+            box-shadow: none;
+        }
+
+        #btn-publish:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Progress bar */
+        #progress-wrap {
+            display: none;
+            border: 2px solid var(--border);
+            height: 10px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Status message */
+        #msg {
+            font-size: 0.9rem;
+            min-height: 1.4em;
+        }
+
+        /* Two column grid on wider screens */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 520px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Auth banner */
+        #auth-banner {
+            display: none;
+            border: 2px solid var(--accent);
+            padding: 20px;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+        }
+    </style>
+</head>
+<body>
+
+<button id="theme-toggle" aria-label="Toggle dark/light mode">
+    <span class="icon">🌙</span>
+</button>
+
+<div class="container" style="max-width:600px; padding-top:80px; padding-bottom:80px;">
+
+    <header style="margin-bottom:40px; padding-bottom:20px; border-bottom:2px solid var(--border);">
+        <a href="/charts.html" style="color:var(--text-muted); text-decoration:none; font-size:0.85rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">← Back to Charts</a>
+        <h1 style="margin-top:20px; font-size:2rem; letter-spacing:-1px;">Publish Chart</h1>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">Upload a community beatmap for Move it!</p>
+    </header>
+
+    <!-- Shown if not logged in -->
+    <div id="auth-banner">
+        <p style="font-weight:bold; margin-bottom:8px;">You need an account to publish charts.</p>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:14px;">Create one for free — it only takes a moment.</p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="/signup.html" style="padding:10px 18px; background:var(--border); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">Create Account →</a>
+            <a href="/login.html"  style="padding:10px 18px; border:2px solid var(--border); color:var(--text); font-family:inherit; font-size:0.9rem; font-weight:bold; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">Log In →</a>
+        </div>
+    </div>
+
+    <div id="upload-form" style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- Song info -->
+        <div class="project" style="display:flex; flex-direction:column; gap:16px;">
+            <h3 style="border-bottom:1px solid var(--border); padding-bottom:10px;">🎵 Song Info</h3>
+
+            <div class="two-col">
+                <div class="field">
+                    <label for="title">Song Title *</label>
+                    <input id="title" type="text" placeholder="e.g. Night of Nights">
+                </div>
+                <div class="field">
+                    <label for="artist">Artist *</label>
+                    <input id="artist" type="text" placeholder="e.g. Alstroemeria Records">
+                </div>
+            </div>
+
+            <div style="max-width:160px;">
+                <div class="field">
+                    <label for="bpm">BPM</label>
+                    <input id="bpm" type="number" placeholder="e.g. 180" min="1" max="999">
+                </div>
+            </div>
+        </div>
+
+        <!-- Cover image -->
+        <div class="project" style="display:flex; flex-direction:column; gap:14px;">
+            <h3 style="border-bottom:1px solid var(--border); padding-bottom:10px;">🖼️ Cover Image</h3>
+
+            <div class="drop-zone" id="cover-zone">
+                <input type="file" id="cover" accept="image/*"
+                    onchange="handleCoverChange(this)"
+                    ondragover="this.parentElement.classList.add('drag-over')"
+                    ondragleave="this.parentElement.classList.remove('drag-over')"
+                    ondrop="this.parentElement.classList.remove('drag-over')">
+                <span class="dz-icon">📷</span>
+                <span class="dz-label">Click or drag an image here<br><small style="opacity:0.6;">PNG, JPG, WebP — recommended 1:1</small></span>
+                <p class="dz-chosen" id="cover-name"></p>
+            </div>
+            <img id="cover-preview" alt="Cover preview">
+        </div>
+
+        <!-- JSON file -->
+        <div class="project" style="display:flex; flex-direction:column; gap:14px;">
+            <h3 style="border-bottom:1px solid var(--border); padding-bottom:10px;">📄 Beatmap JSON *</h3>
+
+            <div class="drop-zone" id="json-zone">
+                <input type="file" id="json" accept=".json"
+                    onchange="handleJsonChange(this)"
+                    ondragover="this.parentElement.classList.add('drag-over')"
+                    ondragleave="this.parentElement.classList.remove('drag-over')"
+                    ondrop="this.parentElement.classList.remove('drag-over')">
+                <span class="dz-icon">📋</span>
+                <span class="dz-label">Click or drag your .json beatmap here</span>
+                <p class="dz-chosen" id="json-name"></p>
+            </div>
+        </div>
+
+        <!-- Progress + submit -->
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <div id="progress-wrap"><div id="progress-bar"></div></div>
+            <button id="btn-publish">Publish Chart</button>
+            <p id="msg"></p>
+            <p style="color:var(--text-muted); font-size:0.8rem;">
+                Logged in as <span id="user-email" style="color:var(--text); font-weight:bold;">—</span>
+                &nbsp;·&nbsp;
+                <a href="#" id="btn-logout" style="color:var(--accent); font-weight:bold;">Log out</a>
+            </p>
+        </div>
+
+    </div><!-- /upload-form -->
+
+</div>
+
+<script src="scripts/theme.js"></script>
 <script>
-document.getElementById('submit').onclick = async () => {
-    const user = (await sb.auth.getUser()).data.user
-    if (!user) { location.href = '/login.html'; return }
+    const { createClient } = supabase
+    const sb = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY')
 
-    // Upload cover image to Supabase Storage
-    const cover = document.getElementById('cover').files[0]
-    const { data: coverData } = await sb.storage
-        .from('charts').upload(`covers/${Date.now()}_${cover.name}`, cover)
+    const msg         = document.getElementById('msg')
+    const progressWrap = document.getElementById('progress-wrap')
+    const progressBar  = document.getElementById('progress-bar')
 
-    // Upload JSON file
-    const json = document.getElementById('json').files[0]
-    const { data: jsonData } = await sb.storage
-        .from('charts').upload(`jsons/${Date.now()}_${json.name}`, json)
+    // ── Auth gate ─────────────────────────────────────────────────────────────
+    async function initAuth() {
+        const { data: { user } } = await sb.auth.getUser()
 
-    // Insert chart record
-    await sb.from('charts').insert({
-        user_id:   user.id,
-        title:     document.getElementById('title').value,
-        artist:    document.getElementById('artist').value,
-        bpm:       parseInt(document.getElementById('bpm').value),
-        cover_url: coverData.path,
-        json_url:  jsonData.path,
-    })
+        if (!user) {
+            document.getElementById('auth-banner').style.display  = 'block'
+            document.getElementById('upload-form').style.display  = 'none'
+            return
+        }
 
-    alert('Chart published!')
-}
+        document.getElementById('user-email').textContent = user.email
+    }
+
+    document.getElementById('btn-logout').onclick = async (e) => {
+        e.preventDefault()
+        await sb.auth.signOut()
+        location.reload()
+    }
+
+    initAuth()
+
+    // ── File previews ─────────────────────────────────────────────────────────
+    function handleCoverChange(input) {
+        const file    = input.files[0]
+        const nameEl  = document.getElementById('cover-name')
+        const preview = document.getElementById('cover-preview')
+
+        if (!file) { nameEl.textContent = ''; preview.style.display = 'none'; return }
+
+        nameEl.textContent = '✓ ' + file.name
+        const reader = new FileReader()
+        reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block' }
+        reader.readAsDataURL(file)
+    }
+
+    function handleJsonChange(input) {
+        const file   = input.files[0]
+        const nameEl = document.getElementById('json-name')
+        nameEl.textContent = file ? '✓ ' + file.name : ''
+    }
+
+    // ── Upload helpers ────────────────────────────────────────────────────────
+    function setProgress(pct) {
+        progressWrap.style.display = 'block'
+        progressBar.style.width    = pct + '%'
+    }
+
+    function setMsg(text, ok = false) {
+        msg.textContent   = text
+        msg.style.color   = ok ? '#66ff99' : 'var(--accent)'
+    }
+
+    // ── Publish ───────────────────────────────────────────────────────────────
+    document.getElementById('btn-publish').onclick = async () => {
+        const { data: { user } } = await sb.auth.getUser()
+        if (!user) { location.href = '/login.html'; return }
+
+        const title  = document.getElementById('title').value.trim()
+        const artist = document.getElementById('artist').value.trim()
+        const bpm    = parseInt(document.getElementById('bpm').value) || null
+        const cover  = document.getElementById('cover').files[0]
+        const json   = document.getElementById('json').files[0]
+
+        // Validation
+        if (!title)  { setMsg('✗ Please enter a song title.'); return }
+        if (!artist) { setMsg('✗ Please enter an artist name.'); return }
+        if (!json)   { setMsg('✗ Please attach a beatmap JSON file.'); return }
+
+        const btn = document.getElementById('btn-publish')
+        btn.disabled    = true
+        btn.textContent = 'Uploading…'
+        setMsg('')
+        setProgress(10)
+
+        try {
+            let coverPath = null
+
+            // Upload cover image (optional)
+            if (cover) {
+                const ext  = cover.name.split('.').pop()
+                const path = `covers/${Date.now()}_${user.id}.${ext}`
+                const { error: coverErr } = await sb.storage
+                    .from('charts').upload(path, cover, { upsert: false })
+                if (coverErr) throw new Error('Cover upload failed: ' + coverErr.message)
+                coverPath = path
+            }
+
+            setProgress(50)
+
+            // Upload JSON
+            const jsonExt  = json.name.split('.').pop()
+            const jsonPath = `jsons/${Date.now()}_${user.id}.${jsonExt}`
+            const { error: jsonErr } = await sb.storage
+                .from('charts').upload(jsonPath, json, { upsert: false, contentType: 'application/json' })
+            if (jsonErr) throw new Error('JSON upload failed: ' + jsonErr.message)
+
+            setProgress(80)
+
+            // Insert record
+            const { error: insertErr } = await sb.from('charts').insert({
+                user_id:   user.id,
+                title,
+                artist,
+                bpm,
+                cover_url: coverPath,
+                json_url:  jsonPath,
+            })
+            if (insertErr) throw new Error('Failed to save chart: ' + insertErr.message)
+
+            setProgress(100)
+            setMsg('✓ Chart published! Redirecting…', true)
+
+            setTimeout(() => { location.href = '/charts.html' }, 1200)
+
+        } catch (err) {
+            setMsg('✗ ' + err.message)
+            btn.disabled    = false
+            btn.textContent = 'Publish Chart'
+            setProgress(0)
+            progressWrap.style.display = 'none'
+        }
+    }
 </script>
+</body>
+</html>
