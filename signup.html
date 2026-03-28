@@ -66,42 +66,64 @@
 </div>
 
 <script src="scripts/theme.js"></script>
+<script src="scripts/auth-nav.js"></script><!-- redirects away if already logged in -->
 <script>
     const { createClient } = supabase
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
-
     const msg = document.getElementById('msg')
+
+    // Keywords that indicate a duplicate account error from Supabase
+    const DUPE_PHRASES = [
+        'user already registered',
+        'already been registered',
+        'already exists',
+        'email address is already',
+        'already in use',
+    ]
+
+    function isDuplicateError(message) {
+        const lower = (message ?? '').toLowerCase()
+        return DUPE_PHRASES.some(p => lower.includes(p))
+    }
 
     document.getElementById('btn-signup').onclick = async () => {
         const btn      = document.getElementById('btn-signup')
         const email    = document.getElementById('email').value.trim()
         const password = document.getElementById('password').value
 
-        if (!email || !password) {
-            msg.textContent = '✗ Please fill in all fields.'
-            return
-        }
-
-        if (password.length < 6) {
-            msg.textContent = '✗ Password must be at least 6 characters.'
-            return
-        }
+        if (!email || !password) { msg.textContent = '✗ Please fill in all fields.'; return }
+        if (password.length < 6) { msg.textContent = '✗ Password must be at least 6 characters.'; return }
 
         btn.textContent = 'Creating account…'
         btn.disabled    = true
+        msg.textContent = ''
+        msg.style.color = 'var(--accent)'
 
-        const { error } = await sb.auth.signUp({ email, password })
+        const { data, error } = await sb.auth.signUp({ email, password })
 
         if (error) {
-            msg.textContent = '✗ ' + error.message
+            // Friendly duplicate-account message
+            msg.textContent = isDuplicateError(error.message)
+                ? '✗ An account with these credentials already exists! Try logging in instead.'
+                : '✗ ' + error.message
             btn.textContent = 'Sign Up'
             btn.disabled    = false
-        } else {
-            msg.style.color = '#66ff99'
-            msg.textContent = '✓ Check your email to confirm your account!'
-            btn.textContent = 'Sign Up'
-            btn.disabled    = false
+            return
         }
+
+        // Supabase may return success even for existing emails (depends on settings).
+        // If identities array is empty, the email is already taken.
+        if (data?.user && data.user.identities && data.user.identities.length === 0) {
+            msg.textContent = '✗ An account with these credentials already exists! Try logging in instead.'
+            btn.textContent = 'Sign Up'
+            btn.disabled    = false
+            return
+        }
+
+        msg.style.color = '#66ff99'
+        msg.textContent = '✓ Check your email to confirm your account!'
+        btn.textContent = 'Sign Up'
+        btn.disabled    = false
     }
 </script>
 </body>

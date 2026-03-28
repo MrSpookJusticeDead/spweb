@@ -9,7 +9,6 @@
 
     <link rel="icon" type="image/png" href="imgs/icon.png">
     <link rel="apple-touch-icon" href="imgs/icon.png">
-    <!-- This is a test -->
 
     <!-- Facebook Meta Tags -->
     <meta property="og:url" content="https://spookwebsite.vercel.app/">
@@ -30,7 +29,6 @@
 </head>
 
 <body>
-    <!--  Theme Toggle Button (top) -->
     <button id="theme-toggle" aria-label="Toggle dark/light mode">
         <span class="icon">🌙</span>
     </button>
@@ -67,23 +65,19 @@
             <h2>Social Media</h2>
             <div class="projects">
                 <div class="project">
-                    <h3><a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a>
-                    </h3>
+                    <h3><a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a></h3>
                     <p>I use this one a lot, my username is "spumti"</p>
                 </div>
                 <div class="project">
-                    <h3><a href="https://matrix.to/#/@mrspookyh:matrix.org" target="_blank"
-                            rel="noopener noreferrer">Matrix</a></h3>
+                    <h3><a href="https://matrix.to/#/@mrspookyh:matrix.org" target="_blank" rel="noopener noreferrer">Matrix</a></h3>
                     <p>Alternatively , You can contact me via matrix: @mrspookyh:matrix.org</p>
                 </div>
                 <div class="project">
-                    <h3><a href="https://spookyhtuff.tumblr.com/" target="_blank" rel="noopener noreferrer">Tumblr</a>
-                    </h3>
+                    <h3><a href="https://spookyhtuff.tumblr.com/" target="_blank" rel="noopener noreferrer">Tumblr</a></h3>
                     <p>I post things of my life sometimes here, feel free to take a look</p>
                 </div>
                 <div class="project">
-                    <h3><a href="https://www.youtube.com/channel/UCdiNzpdZkCNT0Gb6-Stz8Ug" target="_blank"
-                            rel="noopener noreferrer">YouTube</a></h3>
+                    <h3><a href="https://www.youtube.com/channel/UCdiNzpdZkCNT0Gb6-Stz8Ug" target="_blank" rel="noopener noreferrer">YouTube</a></h3>
                     <p>I sometimes decide to upload funny moments that happen to me, nonsense or nothing</p>
                 </div>
             </div>
@@ -100,7 +94,8 @@
                     <p>Explore charts made by the community.</p>
                     <a href="/charts.html" style="color:var(--accent)">Browse →</a>
                 </div>
-                <div class="project">
+                <!-- hidden when logged in via auth-nav.js -->
+                <div class="project" id="index-signup-card">
                     <h3>✏️ Publish a Chart</h3>
                     <p>Create an account and upload your own beatmap JSON.</p>
                     <a href="/signup.html" style="color:var(--accent)">Create Account →</a>
@@ -123,8 +118,10 @@
         </footer>
     </div>
 
-    <!-- theme script -->
     <script src="scripts/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/auth-nav.js"></script>
 </body>
 
 </html>
