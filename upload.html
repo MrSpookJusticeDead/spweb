@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="imgs/icon.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/config.js"></script>
     <style>
         /* Field groups */
         .field {
@@ -270,9 +271,9 @@
 </div>
 
 <script src="scripts/theme.js"></script>
-<script>
+<script>    
     const { createClient } = supabase
-    const sb = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY')
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
     const msg         = document.getElementById('msg')
     const progressWrap = document.getElementById('progress-wrap')
