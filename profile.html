@@ -338,30 +338,40 @@
                 return
             }
 
-            // Verify password first
-            const { error: authError } = await sb.auth.signInWithPassword({
+            btn.disabled = true
+            btn.textContent = 'Verifying password…'
+
+            // Sign in with password to verify and get fresh token
+            const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({
                 email: user.email,
                 password: password
             })
 
-            if (authError) {
+            if (signInError) {
                 msg.textContent = '✗ Incorrect password.'
+                btn.disabled = false
+                btn.textContent = 'Delete My Account'
                 document.getElementById('delete-modal').classList.remove('active')
                 return
             }
 
-            btn.disabled = true
+            // Use the session from signIn response
+            const session = signInData.session
+
+            if (!session?.access_token) {
+                msg.textContent = '✗ No valid session created.'
+                btn.disabled = false
+                btn.textContent = 'Delete My Account'
+                document.getElementById('delete-modal').classList.remove('active')
+                return
+            }
+
             btn.textContent = 'Deleting…'
 
             try {
-                // Get fresh session token
-                const { data: { session } } = await sb.auth.getSession()
-
-                if (!session?.access_token) {
-                    throw new Error('No valid session found')
-                }
-
-                console.log('Calling delete function...')
+                console.log('Calling delete function with token...')
+                console.log('User ID:', user.id)
+                console.log('Token starts with:', session.access_token.substring(0, 20) + '...')
 
                 // Call the Edge Function with proper auth
                 const response = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
@@ -370,6 +380,7 @@
                         'Authorization': `Bearer ${session.access_token}`,
                         'Content-Type': 'application/json',
                         'apikey': SUPABASE_KEY,
+                        'X-Client-Info': 'spook-website/1.0'
                     },
                 })
 
