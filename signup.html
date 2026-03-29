@@ -87,8 +87,8 @@
     <script src="scripts/auth-nav.js"></script>
     <script>
         const { createClient } = supabase
-        const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
-        const msg = document.getElementById('msg')
+        // const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+        // const msg = document.getElementById('msg')
 
         const DUPE_PHRASES = ['user already registered', 'already been registered', 'already exists', 'email address is already', 'already in use']
         function isDuplicateError(m) { return DUPE_PHRASES.some(p => (m ?? '').toLowerCase().includes(p)) }

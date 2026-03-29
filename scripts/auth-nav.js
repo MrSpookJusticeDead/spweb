@@ -3,8 +3,8 @@
 // Requires: supabase CDN + config.js loaded before this script.
 
 (async () => {
-    const { createClient } = supabase
-    const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+    // const { createClient } = supabase
+   //  const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
     const { data: { user } } = await sb.auth.getUser()
     const page = location.pathname

@@ -47,8 +47,8 @@
 <script src="scripts/theme.js"></script>
 <script>
     const { createClient } = supabase
-    const sb  = createClient(SUPABASE_URL, SUPABASE_KEY)
-    const msg = document.getElementById('msg')
+    // const sb  = createClient(SUPABASE_URL, SUPABASE_KEY)
+    // const msg = document.getElementById('msg')
 
     async function checkAndRedirect() {
         const { data: { user } } = await sb.auth.getUser()
