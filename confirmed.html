@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,32 +10,50 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scripts/config.js"></script>
 </head>
+
 <body>
-<div id="content" class="container" style="display:none; max-width:440px; padding-top:80px; text-align:center;">
-    <h1 style="font-size:2rem;">✓ Email Confirmed!</h1>
-    <p style="color:var(--text-muted); margin-top:12px;">Your account is ready. Redirecting you now…</p>
-</div>
-<script src="scripts/theme.js"></script>
-<script>
-    // Only show content if arriving from a confirmation link
-    const hash = window.location.hash
-    const hasToken = hash.includes('access_token') || hash.includes('token_hash') || hash.includes('type=signup')
+    <div id="content" class="container" style="display:none; max-width:440px; padding-top:80px; text-align:center;">
+        <h1 style="font-size:2rem;">✓ Email Confirmed!</h1>
+        <p style="color:var(--text-muted); margin-top:12px;">Your account is ready. Redirecting you now…</p>
+    </div>
+    <script src="scripts/theme.js"></script>
+    <script>
+        const hash = window.location.hash
+        const hasToken = hash.includes('access_token') || hash.includes('token_hash') || hash.includes('type=signup')
 
-    if (!hasToken) {
-        // Not from a confirmation link — show nothing, do nothing
-        document.title = ''
-    } else {
-        document.getElementById('content').style.display = 'block'
+        if (!hasToken) {
+            document.title = ''
+        } else {
+            document.getElementById('content').style.display = 'block'
 
-        sb.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                setTimeout(() => { location.href = '/upload.html' }, 1500)
-            }
-        })
+            sb.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    const user = session.user
 
-        // Fallback redirect
-        setTimeout(() => { location.href = '/upload.html' }, 3000)
-    }
-</script>
+                    // Write username from metadata to profiles table now that we have a session
+                    const metaUsername = user.user_metadata?.username
+                    if (metaUsername) {
+                        const { data: existing } = await sb
+                            .from('profiles')
+                            .select('username')
+                            .eq('id', user.id)
+                            .maybeSingle()
+
+                        if (!existing?.username) {
+                            await sb.from('profiles').upsert(
+                                { id: user.id, username: metaUsername },
+                                { onConflict: 'id' }
+                            )
+                        }
+                    }
+
+                    setTimeout(() => { location.href = '/upload.html' }, 1500)
+                }
+            })
+
+            setTimeout(() => { location.href = '/upload.html' }, 3000)
+        }
+    </script>
 </body>
+
 </html>
