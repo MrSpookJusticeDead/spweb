@@ -50,15 +50,34 @@
     const sb  = createClient(SUPABASE_URL, SUPABASE_KEY)
     const msg = document.getElementById('msg')
 
-    // Must be logged in
-    sb.auth.getUser().then(({ data: { user } }) => {
+    async function checkAndRedirect() {
+        const { data: { user } } = await sb.auth.getUser()
         if (!user) { location.href = '/login.html'; return }
 
-        // If they already have a username, redirect away
-        sb.from('profiles').select('username').eq('id', user.id).maybeSingle().then(({ data }) => {
-            if (data?.username) location.href = '/upload.html'
-        })
-    })
+        // Check if profile exists AND has a username
+        const { data: profile, error } = await sb
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .maybeSingle()
+        
+        if (error) {
+            console.error('Profile check error:', error)
+            return
+        }
+        
+        // Redirect if username exists (already set)
+        if (profile?.username) {
+            location.href = '/upload.html'
+            return
+        }
+        
+        // Show username input if not set
+        document.querySelector('.container').style.display = 'block'
+    }
+
+    // Run check on load
+    checkAndRedirect()
 
     document.getElementById('btn-save').onclick = async () => {
         const btn      = document.getElementById('btn-save')
@@ -70,13 +89,22 @@
         if (!/^[a-zA-Z0-9_]+$/.test(username))  { msg.textContent = '✗ Letters, numbers and underscores only.'; return }
         if (username.length < 2)                 { msg.textContent = '✗ At least 2 characters.'; return }
 
-        // Check taken
-        const { data: existing } = await sb.from('profiles').select('id').eq('username', username).maybeSingle()
+        // Check if username is taken by someone ELSE
+        const { data: existing } = await sb
+            .from('profiles')
+            .select('id')
+            .eq('username', username)
+            .neq('id', user.id) // Exclude current user
+            .maybeSingle()
+            
         if (existing) { msg.textContent = '✗ That username is already taken.'; return }
 
         btn.disabled = true; btn.textContent = 'Saving…'
 
-        const { error } = await sb.from('profiles').insert({ id: user.id, username })
+        // Use upsert to handle both new and existing profile rows
+        const { error } = await sb
+            .from('profiles')
+            .upsert({ id: user.id, username }, { onConflict: 'id' })
 
         if (error) {
             msg.textContent = '✗ ' + error.message
