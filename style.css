@@ -408,14 +408,12 @@ footer {
     box-shadow: none;
 }
 
-/* ── Mobile: pin widget to top-right of header ── */
+/* ── Mobile: float right, tuck up close to top ── */
 @media (max-width: 600px) {
     .header-right {
-        float: none;
-        position: absolute;
-        top: 0;
-        right: 60px; /* clear the fixed theme toggle */
-        margin: 0;
+        float: right;
+        margin-left: 10px;
+        margin-top: 0;
         width: auto;
     }
 
