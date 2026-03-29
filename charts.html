@@ -343,13 +343,13 @@
                     <div class="chart-title">${escHtml(chart.title)}</div>
                     <div class="chart-sub">${escHtml(chart.artist)}</div>
                     <div class="chart-by">
-                        published by <span>${escHtml(username)}</span>${uploaded ? ` · ${uploaded}` : ''}
-                        <img
+                        published by <span>${escHtml(username)}</span>  <img
                             class="publisher-avatar"
                             src="${escHtml(avatarUrl)}"
                             alt="${escHtml(username)}"
                             loading="lazy"
                             onerror="this.src='${DEFAULT_AVATAR}'">
+                        ${uploaded ? ` · ${uploaded}` : ''}
                     </div>
                 </div>
                 <div class="chart-right">
