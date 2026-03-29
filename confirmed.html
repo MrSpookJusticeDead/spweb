@@ -18,8 +18,6 @@
 <script>
     // Supabase will land here with the token in the URL hash.
     // The client picks it up automatically and creates a session.
-    const { createClient } = supabase
-    const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
     sb.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' && session) {
