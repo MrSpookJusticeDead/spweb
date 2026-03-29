@@ -82,6 +82,7 @@ header {
     margin-bottom: 60px;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--border);
+    overflow: hidden; /* clearfix for .header-right float */
 }
 
 .profile {
@@ -278,5 +279,150 @@ footer {
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
+    }
+}
+
+/* ========== Header Right — Auth Widget ========== */
+
+/* Floats to the top-right corner of the header */
+.header-right {
+    float: right;
+    margin-left: 20px;
+    margin-top: 4px;
+}
+
+/* ── Logged-in: avatar + username + log out ── */
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 2px solid var(--border);
+    padding: 8px 12px;
+    background: var(--card-bg);
+    box-shadow: 3px 3px 0 var(--border);
+}
+
+.header-avatar {
+    width: 28px;
+    height: 28px;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: block;
+}
+
+.header-username {
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+
+.header-username:hover {
+    color: var(--accent);
+}
+
+.header-logout {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    border-left: 1px solid var(--border);
+    padding-left: 10px;
+}
+
+.header-logout:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+/* ── Logged-out: Log In + Register buttons ── */
+.header-guest {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-btn-login {
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text);
+    text-decoration: none;
+    border: 2px solid var(--border);
+    padding: 7px 12px;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+
+.header-btn-login:hover {
+    background: var(--border);
+    color: var(--bg);
+}
+
+.header-btn-register {
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--bg);
+    text-decoration: none;
+    border: 2px solid var(--border);
+    padding: 7px 12px;
+    background: var(--border);
+    box-shadow: 3px 3px 0 var(--accent);
+    white-space: nowrap;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.header-btn-register:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--accent);
+}
+
+.header-btn-register:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+/* ── Mobile: drop below nav, full width ── */
+@media (max-width: 600px) {
+    .header-right {
+        float: none;
+        margin-left: 0;
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    .header-user {
+        width: 100%;
+        justify-content: center;
+        box-shadow: none;
+    }
+
+    .header-guest {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .header-btn-login,
+    .header-btn-register {
+        flex: 1;
+        text-align: center;
+        box-shadow: none;
+    }
+
+    .header-btn-register:hover {
+        transform: none;
+        box-shadow: none;
     }
 }
