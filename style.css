@@ -427,17 +427,18 @@ footer {
         box-shadow: none;
     }
 
-    .header-settings {
-        display: flex;
-        align-items: center;
-        color: var(--text-muted);
-        text-decoration: none;
-        padding-left: 10px;
-        border-left: 1px solid var(--border);
-        transition: color 0.2s;
-    }
+   /* ── Gear icon settings link ── */
+.header-settings {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding-left: 10px;
+    border-left: 1px solid var(--border);
+    transition: color 0.2s;
+}
 
-    .header-settings:hover {
-        color: var(--accent);
-    }
+.header-settings:hover {
+    color: var(--accent);
+}
 }
