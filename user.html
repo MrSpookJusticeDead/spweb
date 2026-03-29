@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Spook</title>
+    <link rel="icon" type="image/png" href="imgs/icon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/config.js"></script>
+    <style>
+        .user-card {
+            border: 2px solid var(--border);
+            padding: 30px;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 40px;
+            box-shadow: 4px 4px 0 var(--border);
+        }
+
+        .user-avatar-large {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border: 2px solid var(--border);
+            flex-shrink: 0;
+            background: var(--skill-bg);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .user-info h2 {
+            font-size: 1.8rem;
+            border: none;
+            padding: 0;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .user-meta {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .user-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Chart list (reuse from charts.html) */
+        .chart-list { display: flex; flex-direction: column; gap: 0; }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            transition: background 0.15s;
+        }
+
+        .chart-row:first-child { border-top: 1px solid var(--border); }
+        .chart-row:hover { background: var(--skill-bg); margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
+
+        .chart-thumb {
+            width: 56px; height: 56px; object-fit: cover;
+            border: 2px solid var(--card-border);
+            flex-shrink: 0; display: block; background: var(--skill-bg);
+        }
+
+        .chart-thumb-placeholder {
+            width: 56px; height: 56px;
+            border: 2px solid var(--card-border);
+            flex-shrink: 0; display: flex; align-items: center;
+            justify-content: center; font-size: 1.4rem; background: var(--skill-bg);
+        }
+
+        .chart-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+        .chart-title { font-size: 0.95rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chart-sub { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .chart-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+
+        .chart-bpm {
+            font-size: 0.75rem; font-weight: bold; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--accent);
+        }
+
+        .chart-dl {
+            padding: 5px 10px; border: 2px solid var(--border); color: var(--text);
+            font-family: inherit; font-size: 0.7rem; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 1px; text-decoration: none;
+            transition: background 0.15s, color 0.15s; white-space: nowrap;
+        }
+        .chart-dl:hover { background: var(--border); color: var(--bg); }
+
+        .state-msg { text-align: center; color: var(--text-muted); padding: 40px 0; font-size: 1rem; }
+
+        @media (max-width: 500px) {
+            .user-card { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<button id="theme-toggle" aria-label="Toggle dark/light mode">
+    <span class="icon">🌙</span>
+</button>
+
+<div class="container">
+    <header>
+        <div class="profile">
+            <div class="avatar"><img src="imgs/icon.png" alt="Profile"></div>
+            <div>
+                <h1 id="page-title">Profile</h1>
+                <p class="tagline">Community member</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/index.html">Home</a>
+            <a href="/charts.html">Browse Charts</a>
+        </nav>
+    </header>
+
+    <div id="loading" class="state-msg">Loading profile…</div>
+
+    <div id="profile-content" style="display:none;">
+        <div class="user-card">
+            <img id="user-avatar" class="user-avatar-large" src="imgs/icon.png" alt="avatar">
+            <div class="user-info">
+                <h2 id="user-username">—</h2>
+                <div class="user-meta">
+                    <span>📅 Joined <strong id="user-joined">—</strong></span>
+                    <span>🎵 <strong id="user-chart-count">0</strong> chart(s) published</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>Charts by <span id="charts-by-name">this user</span></h2>
+        <div id="chart-list">
+            <p class="state-msg">Loading charts…</p>
+        </div>
+    </div>
+
+    <div id="not-found" style="display:none;" class="state-msg">
+        ✗ User not found.
+    </div>
+
+    <footer style="margin-top:60px;">
+        <div class="social-links">
+            <a href="https://discord.gg/yYq3ve5C3w" target="_blank" rel="noopener noreferrer">Discord</a>
+        </div>
+        <p>&copy; 2026 - Spookie</p>
+    </footer>
+</div>
+
+<script src="scripts/theme.js"></script>
+<script src="scripts/auth-nav.js"></script>
+<script>
+    const DEFAULT_AVATAR = 'imgs/icon.png'
+    const params = new URLSearchParams(location.search)
+    const targetUsername = params.get('u')
+
+    function resolveAvatar(path) {
+        if (!path) return DEFAULT_AVATAR
+        if (path.startsWith('http')) return path
+        const { data } = sb.storage.from('avatars').getPublicUrl(path)
+        return data.publicUrl
+    }
+
+    function getPublicUrl(path) {
+        if (!path) return null
+        const { data } = sb.storage.from('charts').getPublicUrl(path)
+        return data.publicUrl
+    }
+
+    function escHtml(str) {
+        return String(str ?? '')
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+
+    async function loadProfile() {
+        if (!targetUsername) {
+            document.getElementById('loading').style.display = 'none'
+            document.getElementById('not-found').style.display = 'block'
+            return
+        }
+
+        // Fetch profile row
+        const { data: profile } = await sb
+            .from('profiles')
+            .select('id, username, avatar_url, created_at')
+            .eq('username', targetUsername)
+            .maybeSingle()
+
+        if (!profile) {
+            document.getElementById('loading').style.display = 'none'
+            document.getElementById('not-found').style.display = 'block'
+            return
+        }
+
+        // Fetch their charts
+        const { data: charts } = await sb
+            .from('charts')
+            .select('*')
+            .eq('user_id', profile.id)
+            .order('created_at', { ascending: false })
+
+        const chartCount = charts?.length ?? 0
+        const joined = profile.created_at
+            ? new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+            : 'Unknown'
+
+        // Populate header
+        document.getElementById('page-title').textContent = profile.username
+        document.title = profile.username + ' | Spook'
+
+        // Populate card
+        document.getElementById('user-avatar').src = resolveAvatar(profile.avatar_url)
+        document.getElementById('user-username').textContent = profile.username
+        document.getElementById('user-joined').textContent = joined
+        document.getElementById('user-chart-count').textContent = chartCount
+        document.getElementById('charts-by-name').textContent = profile.username
+
+        // Render charts
+        const listEl = document.getElementById('chart-list')
+        listEl.innerHTML = ''
+
+        if (chartCount === 0) {
+            listEl.innerHTML = '<p class="state-msg">No charts published yet.</p>'
+        } else {
+            const container = document.createElement('div')
+            container.className = 'chart-list'
+
+            charts.forEach(chart => {
+                const coverUrl = getPublicUrl(chart.cover_url)
+                const jsonUrl  = getPublicUrl(chart.json_url)
+                const uploaded = chart.created_at
+                    ? new Date(chart.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })
+                    : ''
+
+                const row = document.createElement('div')
+                row.className = 'chart-row'
+                row.innerHTML = `
+                    ${coverUrl
+                        ? `<img class="chart-thumb" src="${escHtml(coverUrl)}" alt="${escHtml(chart.title)}" loading="lazy">`
+                        : `<div class="chart-thumb-placeholder">🎵</div>`}
+                    <div class="chart-meta">
+                        <div class="chart-title">${escHtml(chart.title)}</div>
+                        <div class="chart-sub">${escHtml(chart.artist)}</div>
+                        ${uploaded ? `<div style="font-size:0.75rem;color:var(--text-muted);">${uploaded}</div>` : ''}
+                    </div>
+                    <div class="chart-right">
+                        ${chart.bpm ? `<div class="chart-bpm">${escHtml(String(chart.bpm))} BPM</div>` : ''}
+                        ${jsonUrl ? `<a class="chart-dl" href="${escHtml(jsonUrl)}" download="${escHtml(chart.title)}.json">↓ JSON</a>` : ''}
+                    </div>
+                `
+                container.appendChild(row)
+            })
+
+            listEl.appendChild(container)
+        }
+
+        document.getElementById('loading').style.display = 'none'
+        document.getElementById('profile-content').style.display = 'block'
+    }
+
+    loadProfile()
+</script>
+</body>
+</html>
