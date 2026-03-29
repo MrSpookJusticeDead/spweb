@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,12 +16,14 @@
             margin-bottom: 20px;
             background: var(--card-bg);
         }
+
         .setting-group h3 {
             margin-bottom: 15px;
             font-size: 1.1rem;
             border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
         }
+
         .current-value {
             color: var(--text-muted);
             font-size: 0.9rem;
@@ -29,23 +32,31 @@
             background: var(--bg);
             border-left: 3px solid var(--accent);
         }
+
         .danger-zone {
             border-color: var(--accent);
         }
+
         .danger-zone h3 {
             color: var(--accent);
         }
+
         .btn-danger {
             background: var(--accent);
             color: var(--bg);
         }
+
         .btn-danger:hover {
             opacity: 0.9;
         }
+
         .form-row {
             margin-bottom: 15px;
         }
-        input[type="text"], input[type="email"], input[type="password"] {
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
             padding: 12px;
             background: var(--card-bg);
@@ -56,26 +67,34 @@
             outline: none;
             transition: border-color 0.2s;
         }
+
         input:focus {
             border-color: var(--accent);
         }
+
         .helper-text {
             font-size: 0.75rem;
             color: var(--text-muted);
             margin-top: 4px;
         }
+
         .confirm-modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
+
         .confirm-modal.active {
             display: flex;
         }
+
         .modal-content {
             background: var(--card-bg);
             border: 2px solid var(--border);
@@ -83,6 +102,7 @@
             max-width: 400px;
             width: 90%;
         }
+
         .modal-buttons {
             display: flex;
             gap: 10px;
@@ -91,256 +111,280 @@
         }
     </style>
 </head>
+
 <body>
 
-<button id="theme-toggle" aria-label="Toggle dark/light mode">
-    <span class="icon">🌙</span>
-</button>
+    <button id="theme-toggle" aria-label="Toggle dark/light mode">
+        <span class="icon">🌙</span>
+    </button>
 
-<div class="container" style="max-width:500px; padding-top:60px; padding-bottom:60px;">
+    <div class="container" style="max-width:500px; padding-top:60px; padding-bottom:60px;">
 
-    <header style="margin-bottom:30px; padding-bottom:20px; border-bottom:2px solid var(--border);">
-        <a href="/index.html" style="color:var(--text-muted); text-decoration:none; font-size:0.85rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">← Back to Home</a>
-        <h1 style="margin-top:20px; font-size:1.8rem; letter-spacing:-1px;">Profile Settings</h1>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">Manage your account</p>
-    </header>
+        <header style="margin-bottom:30px; padding-bottom:20px; border-bottom:2px solid var(--border);">
+            <a href="/index.html"
+                style="color:var(--text-muted); text-decoration:none; font-size:0.85rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">←
+                Back to Home</a>
+            <h1 style="margin-top:20px; font-size:1.8rem; letter-spacing:-1px;">Profile Settings</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">Manage your account</p>
+        </header>
 
-    <div id="loading" style="text-align:center; padding:40px; color:var(--text-muted);">Loading profile…</div>
-    
-    <div id="profile-content" style="display:none;">
+        <div id="loading" style="text-align:center; padding:40px; color:var(--text-muted);">Loading profile…</div>
 
-        <!-- Username Section -->
-        <div class="setting-group">
-            <h3>✏️ Change Username</h3>
-            <div class="current-value">Current: <strong id="current-username">loading…</strong></div>
-            <div class="form-row">
-                <input id="new-username" type="text" placeholder="New username" maxlength="30">
-                <p class="helper-text">Letters, numbers, underscores only. 2-30 characters.</p>
+        <div id="profile-content" style="display:none;">
+
+            <!-- Username Section -->
+            <div class="setting-group">
+                <h3>✏️ Change Username</h3>
+                <div class="current-value">Current: <strong id="current-username">loading…</strong></div>
+                <div class="form-row">
+                    <input id="new-username" type="text" placeholder="New username" maxlength="30">
+                    <p class="helper-text">Letters, numbers, underscores only. 2-30 characters.</p>
+                </div>
+                <button id="btn-change-username"
+                    style="padding:10px 20px; background:var(--border); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; border:2px solid var(--border); cursor:pointer; box-shadow:2px 2px 0 var(--accent);"
+                    onmouseover="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'"
+                    onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='2px 2px 0 var(--accent)'"
+                    onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
+                    onmouseup="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'">
+                    Update Username
+                </button>
+                <p id="username-msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em; margin-top:10px;">
+                </p>
             </div>
-            <button id="btn-change-username"
-                style="padding:10px 20px; background:var(--border); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; border:2px solid var(--border); cursor:pointer; box-shadow:2px 2px 0 var(--accent);"
-                onmouseover="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'"
-                onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='2px 2px 0 var(--accent)'"
-                onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
-                onmouseup="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'">
-                Update Username
-            </button>
-            <p id="username-msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em; margin-top:10px;"></p>
-        </div>
 
-        <!-- Email Section -->
-        <div class="setting-group">
-            <h3>📧 Change Email</h3>
-            <div class="current-value">Current: <strong id="current-email">loading…</strong></div>
-            <div class="form-row">
-                <input id="new-email" type="email" placeholder="new@example.com">
-                <p class="helper-text">You'll need to verify the new email address.</p>
+            <!-- Email Section -->
+            <div class="setting-group">
+                <h3>📧 Change Email</h3>
+                <div class="current-value">Current: <strong id="current-email">loading…</strong></div>
+                <div class="form-row">
+                    <input id="new-email" type="email" placeholder="new@example.com">
+                    <p class="helper-text">You'll need to verify the new email address.</p>
+                </div>
+                <div class="form-row">
+                    <input id="email-password" type="password" placeholder="Confirm with current password">
+                </div>
+                <button id="btn-change-email"
+                    style="padding:10px 20px; background:var(--border); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; border:2px solid var(--border); cursor:pointer; box-shadow:2px 2px 0 var(--accent);"
+                    onmouseover="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'"
+                    onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='2px 2px 0 var(--accent)'"
+                    onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
+                    onmouseup="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'">
+                    Update Email
+                </button>
+                <p id="email-msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em; margin-top:10px;">
+                </p>
             </div>
-            <div class="form-row">
-                <input id="email-password" type="password" placeholder="Confirm with current password">
-            </div>
-            <button id="btn-change-email"
-                style="padding:10px 20px; background:var(--border); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; border:2px solid var(--border); cursor:pointer; box-shadow:2px 2px 0 var(--accent);"
-                onmouseover="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'"
-                onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='2px 2px 0 var(--accent)'"
-                onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
-                onmouseup="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--accent)'">
-                Update Email
-            </button>
-            <p id="email-msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em; margin-top:10px;"></p>
-        </div>
 
-        <!-- Delete Account Section -->
-        <div class="setting-group danger-zone">
-            <h3>⚠️ Delete Account</h3>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">
-                This action is permanent. All your data, charts, and profile information will be lost.
-            </p>
-            <div class="form-row">
-                <input id="delete-password" type="password" placeholder="Enter your password to confirm">
+            <!-- Delete Account Section -->
+            <div class="setting-group danger-zone">
+                <h3>⚠️ Delete Account</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">
+                    This action is permanent. All your data, charts, and profile information will be lost.
+                </p>
+                <div class="form-row">
+                    <input id="delete-password" type="password" placeholder="Enter your password to confirm">
+                </div>
+                <button id="btn-delete-account" class="btn-danger"
+                    style="padding:10px 20px; background:var(--accent); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; border:2px solid var(--accent); cursor:pointer; box-shadow:2px 2px 0 var(--border);"
+                    onmouseover="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--border)'"
+                    onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='2px 2px 0 var(--border)'"
+                    onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
+                    onmouseup="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--border)'">
+                    Delete My Account
+                </button>
+                <p id="delete-msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em; margin-top:10px;">
+                </p>
             </div>
-            <button id="btn-delete-account" class="btn-danger"
-                style="padding:10px 20px; background:var(--accent); color:var(--bg); font-family:inherit; font-size:0.9rem; font-weight:bold; border:2px solid var(--accent); cursor:pointer; box-shadow:2px 2px 0 var(--border);"
-                onmouseover="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--border)'"
-                onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='2px 2px 0 var(--border)'"
-                onmousedown="this.style.transform='translate(1px,1px)'; this.style.boxShadow='none'"
-                onmouseup="this.style.transform='translate(-1px,-1px)'; this.style.boxShadow='4px 4px 0 var(--border)'">
-                Delete My Account
-            </button>
-            <p id="delete-msg" style="color:var(--accent); font-size:0.85rem; min-height:1.2em; margin-top:10px;"></p>
+
         </div>
 
     </div>
 
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div id="delete-modal" class="confirm-modal">
-    <div class="modal-content">
-        <h3 style="color:var(--accent); margin-bottom:15px;">⚠️ Confirm Deletion</h3>
-        <p style="margin-bottom:20px;">Are you absolutely sure? This cannot be undone.</p>
-        <div class="modal-buttons">
-            <button id="modal-cancel" style="padding:8px 16px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); cursor:pointer;">Cancel</button>
-            <button id="modal-confirm" class="btn-danger" style="padding:8px 16px; background:var(--accent); border:2px solid var(--accent); color:var(--bg); cursor:pointer; font-weight:bold;">Yes, Delete Everything</button>
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="confirm-modal">
+        <div class="modal-content">
+            <h3 style="color:var(--accent); margin-bottom:15px;">⚠️ Confirm Deletion</h3>
+            <p style="margin-bottom:20px;">Are you absolutely sure? This cannot be undone.</p>
+            <div class="modal-buttons">
+                <button id="modal-cancel"
+                    style="padding:8px 16px; background:var(--card-bg); border:2px solid var(--border); color:var(--text); cursor:pointer;">Cancel</button>
+                <button id="modal-confirm" class="btn-danger"
+                    style="padding:8px 16px; background:var(--accent); border:2px solid var(--accent); color:var(--bg); cursor:pointer; font-weight:bold;">Yes,
+                    Delete Everything</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="scripts/theme.js"></script>
-<script>
-    const { createClient } = supabase
-    const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
-    
-    // Auth check
-    sb.auth.getUser().then(({ data: { user } }) => {
-        if (!user) { location.href = '/login.html'; return }
-        loadProfile(user)
-    })
+    <script src="scripts/theme.js"></script>
+    <script>
+        const { createClient } = supabase
+        const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    async function loadProfile(user) {
-        // Load profile data
-        const { data: profile } = await sb
-            .from('profiles')
-            .select('username')
-            .eq('id', user.id)
-            .maybeSingle()
-        
-        document.getElementById('current-username').textContent = profile?.username || '(not set)'
-        document.getElementById('current-email').textContent = user.email
-        
-        document.getElementById('loading').style.display = 'none'
-        document.getElementById('profile-content').style.display = 'block'
-    }
+        // Auth check
+        sb.auth.getUser().then(({ data: { user } }) => {
+            if (!user) { location.href = '/login.html'; return }
+            loadProfile(user)
+        })
 
-    // ── Change Username ──────────────────────────────────────
-    document.getElementById('btn-change-username').onclick = async () => {
-        const btn = document.getElementById('btn-change-username')
-        const newUsername = document.getElementById('new-username').value.trim()
-        const msg = document.getElementById('username-msg')
-        const { data: { user } } = await sb.auth.getUser()
-        
-        if (!newUsername) { msg.textContent = '✗ Please enter a username.'; return }
-        if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) { msg.textContent = '✗ Letters, numbers, underscores only.'; return }
-        if (newUsername.length < 2) { msg.textContent = '✗ At least 2 characters.'; return }
-        
-        // Check if taken by another user
-        const { data: existing } = await sb
-            .from('profiles')
-            .select('id')
-            .eq('username', newUsername)
-            .neq('id', user.id)
-            .maybeSingle()
-        if (existing) { msg.textContent = '✗ Username already taken.'; return }
-        
-        btn.disabled = true; btn.textContent = 'Updating…'
-        
-        const { error } = await sb
-            .from('profiles')
-            .update({ username: newUsername })
-            .eq('id', user.id)
-        
-        if (error) {
-            msg.textContent = '✗ ' + error.message
+        async function loadProfile(user) {
+            // Load profile data
+            const { data: profile } = await sb
+                .from('profiles')
+                .select('username')
+                .eq('id', user.id)
+                .maybeSingle()
+
+            document.getElementById('current-username').textContent = profile?.username || '(not set)'
+            document.getElementById('current-email').textContent = user.email
+
+            document.getElementById('loading').style.display = 'none'
+            document.getElementById('profile-content').style.display = 'block'
+        }
+
+        // ── Change Username ──────────────────────────────────────
+        document.getElementById('btn-change-username').onclick = async () => {
+            const btn = document.getElementById('btn-change-username')
+            const newUsername = document.getElementById('new-username').value.trim()
+            const msg = document.getElementById('username-msg')
+            const { data: { user } } = await sb.auth.getUser()
+
+            if (!newUsername) { msg.textContent = '✗ Please enter a username.'; return }
+            if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) { msg.textContent = '✗ Letters, numbers, underscores only.'; return }
+            if (newUsername.length < 2) { msg.textContent = '✗ At least 2 characters.'; return }
+
+            // Check if taken by another user
+            const { data: existing } = await sb
+                .from('profiles')
+                .select('id')
+                .eq('username', newUsername)
+                .neq('id', user.id)
+                .maybeSingle()
+            if (existing) { msg.textContent = '✗ Username already taken.'; return }
+
+            btn.disabled = true; btn.textContent = 'Updating…'
+
+            const { error } = await sb
+                .from('profiles')
+                .update({ username: newUsername })
+                .eq('id', user.id)
+
+            if (error) {
+                msg.textContent = '✗ ' + error.message
+                btn.disabled = false; btn.textContent = 'Update Username'
+                return
+            }
+
+            msg.style.color = '#66ff99'
+            msg.textContent = '✓ Username updated!'
+            document.getElementById('current-username').textContent = newUsername
+            document.getElementById('new-username').value = ''
             btn.disabled = false; btn.textContent = 'Update Username'
-            return
         }
-        
-        msg.style.color = '#66ff99'
-        msg.textContent = '✓ Username updated!'
-        document.getElementById('current-username').textContent = newUsername
-        document.getElementById('new-username').value = ''
-        btn.disabled = false; btn.textContent = 'Update Username'
-    }
 
-    // ── Change Email ──────────────────────────────────────
-    document.getElementById('btn-change-email').onclick = async () => {
-        const btn = document.getElementById('btn-change-email')
-        const newEmail = document.getElementById('new-email').value.trim()
-        const password = document.getElementById('email-password').value
-        const msg = document.getElementById('email-msg')
-        
-        if (!newEmail || !password) { msg.textContent = '✗ Please fill in all fields.'; return }
-        
-        btn.disabled = true; btn.textContent = 'Updating…'
-        
-        const { error } = await sb.auth.updateUser({ 
-            email: newEmail,
-            password: password // Required for sensitive changes
-        })
-        
-        if (error) {
-            msg.textContent = '✗ ' + error.message
+        // ── Change Email ──────────────────────────────────────
+        document.getElementById('btn-change-email').onclick = async () => {
+            const btn = document.getElementById('btn-change-email')
+            const newEmail = document.getElementById('new-email').value.trim()
+            const password = document.getElementById('email-password').value
+            const msg = document.getElementById('email-msg')
+
+            if (!newEmail || !password) { msg.textContent = '✗ Please fill in all fields.'; return }
+
+            btn.disabled = true; btn.textContent = 'Updating…'
+
+            const { error } = await sb.auth.updateUser({
+                email: newEmail,
+                password: password // Required for sensitive changes
+            })
+
+            if (error) {
+                msg.textContent = '✗ ' + error.message
+                btn.disabled = false; btn.textContent = 'Update Email'
+                return
+            }
+
+            msg.style.color = '#66ff99'
+            msg.textContent = '✓ Check your new email to confirm the change!'
+            document.getElementById('new-email').value = ''
+            document.getElementById('email-password').value = ''
             btn.disabled = false; btn.textContent = 'Update Email'
-            return
         }
-        
-        msg.style.color = '#66ff99'
-        msg.textContent = '✓ Check your new email to confirm the change!'
-        document.getElementById('new-email').value = ''
-        document.getElementById('email-password').value = ''
-        btn.disabled = false; btn.textContent = 'Update Email'
-    }
 
-    // ── Delete Account (Soft Delete Approach) ──────────────────────────────────────
-    // Note: Hard deletion requires server-side code (Edge Function) for security
-    document.getElementById('btn-delete-account').onclick = () => {
-        const password = document.getElementById('delete-password').value
-        if (!password) {
-            document.getElementById('delete-msg').textContent = '✗ Please enter your password to confirm.'
-            return
+        // ── Delete Account (Soft Delete Approach) ──────────────────────────────────────
+        // Note: Hard deletion requires server-side code (Edge Function) for security
+        document.getElementById('btn-delete-account').onclick = () => {
+            const password = document.getElementById('delete-password').value
+            if (!password) {
+                document.getElementById('delete-msg').textContent = '✗ Please enter your password to confirm.'
+                return
+            }
+            document.getElementById('delete-modal').classList.add('active')
         }
-        document.getElementById('delete-modal').classList.add('active')
-    }
 
-    document.getElementById('modal-cancel').onclick = () => {
-        document.getElementById('delete-modal').classList.remove('active')
-        document.getElementById('delete-msg').textContent = ''
-    }
-
-    document.getElementById('modal-confirm').onclick = async () => {
-        const btn = document.getElementById('btn-delete-account')
-        const password = document.getElementById('delete-password').value
-        const msg = document.getElementById('delete-msg')
-        const { data: { user } } = await sb.auth.getUser()
-        
-        // Verify password first
-        const { error: authError } = await sb.auth.signInWithPassword({
-            email: user.email,
-            password: password
-        })
-        
-        if (authError) {
-            msg.textContent = '✗ Incorrect password.'
+        document.getElementById('modal-cancel').onclick = () => {
             document.getElementById('delete-modal').classList.remove('active')
-            return
+            document.getElementById('delete-msg').textContent = ''
         }
-        
-        // Soft delete: Mark profile as deleted (requires 'deleted_at' column in profiles table)
-        // Alternative: Create an Edge Function for hard deletion
-        const { error } = await sb
-            .from('profiles')
-            .update({ deleted_at: new Date().toISOString() })
-            .eq('id', user.id)
-        
-        if (error) {
-            msg.textContent = '✗ ' + error.message
-            document.getElementById('delete-modal').classList.remove('active')
-            return
-        }
-        
-        // Sign out and redirect
-        await sb.auth.signOut()
-        msg.style.color = '#66ff99'
-        msg.textContent = '✓ Account deleted. Goodbye!'
-        setTimeout(() => { location.href = '/index.html' }, 1500)
-    }
 
-    // Close modal on outside click
-    document.getElementById('delete-modal').onclick = (e) => {
-        if (e.target.id === 'delete-modal') {
-            document.getElementById('delete-modal').classList.remove('active')
+        document.getElementById('modal-confirm').onclick = async () => {
+            const btn = document.getElementById('btn-delete-account')
+            const password = document.getElementById('delete-password').value
+            const msg = document.getElementById('delete-msg')
+            const { data: { user } } = await sb.auth.getUser()
+
+            // Verify password first
+            const { error: authError } = await sb.auth.signInWithPassword({
+                email: user.email,
+                password: password
+            })
+
+            if (authError) {
+                msg.textContent = '✗ Incorrect password.'
+                document.getElementById('delete-modal').classList.remove('active')
+                return
+            }
+
+            btn.disabled = true
+            btn.textContent = 'Deleting…'
+
+            try {
+                // Call the Edge Function to hard delete
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                })
+
+                const result = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to delete account')
+                }
+
+                // Sign out and redirect
+                await sb.auth.signOut()
+                msg.style.color = '#66ff99'
+                msg.textContent = '✓ Account permanently deleted. Goodbye!'
+                document.getElementById('delete-modal').classList.remove('active')
+                setTimeout(() => { location.href = '/index.html' }, 2000)
+
+            } catch (error) {
+                msg.textContent = '✗ ' + error.message
+                btn.disabled = false
+                btn.textContent = 'Delete My Account'
+                document.getElementById('delete-modal').classList.remove('active')
+            }
         }
-    }
-</script>
+
+        // Close modal on outside click
+        document.getElementById('delete-modal').onclick = (e) => {
+            if (e.target.id === 'delete-modal') {
+                document.getElementById('delete-modal').classList.remove('active')
+            }
+        }
+    </script>
 </body>
+
 </html>
