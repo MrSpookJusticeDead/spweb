@@ -156,21 +156,9 @@
         }
 
         /* ── Auth nav ── */
-        #nav-user { display: none; align-items: center; gap: 8px; }
 
         /* Nav avatar: shows profile picture or fallback icon */
-        .nav-avatar {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            background: var(--card-bg);
-            flex-shrink: 0;
-            overflow: hidden;
-        }
+      
 
         .nav-avatar img {
             width: 100%;
@@ -180,8 +168,6 @@
         }
 
         .nav-signed-label { color: var(--text); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
-        #nav-logout { color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; text-decoration: none; transition: opacity 0.2s; }
-        #nav-logout:hover { opacity: 0.7; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -203,13 +189,6 @@
             <a href="/index.html">Home</a>
             <a href="/charts.html" style="color:var(--text);">Browse</a>
             <a href="/upload.html">Publish</a>
-            <a href="/login.html" id="nav-login">Log In</a>
-            <span id="nav-user">
-                <!-- Avatar swapped in by JS once loaded -->
-                <span class="nav-avatar" id="nav-avatar-wrap">👤</span>
-                <span class="nav-signed-label" id="nav-username">Signed in</span>
-                <a href="#" id="nav-logout">Log Out</a>
-            </span>
             <a href="/profile.html">⚙️ Settings</a>
         </nav>
     </header>
@@ -261,40 +240,7 @@
     }
 
     // ── Nav: show avatar + username when logged in ──
-    sb.auth.getUser().then(async ({ data: { user } }) => {
-        if (!user) return
-
-        const loginLink  = document.getElementById('nav-login')
-        const navUser    = document.getElementById('nav-user')
-        const navName    = document.getElementById('nav-username')
-        const navAvWrap  = document.getElementById('nav-avatar-wrap')
-        const navLogout  = document.getElementById('nav-logout')
-
-        // Fetch profile for username + avatar
-        const { data: profile } = await sb
-            .from('profiles')
-            .select('username, avatar_url')
-            .eq('id', user.id)
-            .maybeSingle()
-
-        if (loginLink)  loginLink.style.display = 'none'
-        if (navUser)    navUser.style.display = 'flex'
-        if (navName)    navName.textContent = profile?.username || 'User'
-
-        // Swap the 👤 emoji for a real img
-        if (navAvWrap) {
-            const avatarUrl = resolveAvatar(profile?.avatar_url)
-            navAvWrap.innerHTML = `<img src="${avatarUrl}" alt="avatar" onerror="this.parentElement.textContent='👤'">`
-        }
-
-        if (navLogout) {
-            navLogout.onclick = async (e) => {
-                e.preventDefault()
-                await sb.auth.signOut()
-                location.reload()
-            }
-        }
-    })
+   
 
     // ── Chart list ──
     const list   = document.getElementById('chart-list')
