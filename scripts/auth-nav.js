@@ -64,7 +64,7 @@
                         src="${resolveAvatar(avatarUrl)}"
                         alt="avatar"
                         onerror="this.src='${DEFAULT_AVATAR}'">
-                    <a href="/profile.html" class="header-username">${escHtml(username ?? 'User')}</a>
+                    <a href="/user.html?u=${escHtml(username ?? '')}" class="header-username">${escHtml(username ?? 'User')}</a>
                     <a href="/profile.html" class="header-settings" aria-label="Settings">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.34.07-.69.07-1.08s-.03-.74-.07-1.08l2.33-1.82c.21-.16.27-.46.13-.7l-2.2-3.82c-.13-.24-.42-.32-.66-.24l-2.75 1.11c-.57-.44-1.18-.81-1.86-1.08L14 2.42C13.95 2.16 13.72 2 13.45 2h-4.4c-.27 0-.5.16-.55.42l-.41 2.45c-.68.27-1.3.64-1.86 1.08L3.48 4.84c-.24-.09-.53 0-.66.24L.62 8.9c-.14.24-.08.54.13.7l2.33 1.82C3.03 11.76 3 12.11 3 12.5s.03.74.07 1.08L.74 15.4c-.21.16-.27.46-.13.7l2.2 3.82c.13.24.42.32.66.24l2.75-1.11c.57.44 1.18.81 1.86 1.08l.41 2.45c.05.26.28.42.55.42h4.4c.27 0 .5-.16.55-.42l.41-2.45c.68-.27 1.3-.64 1.86-1.08l2.75 1.11c.24.09.53 0 .66-.24l2.2-3.82c.14-.24.08-.54-.13-.7l-2.33-1.82z"/>
