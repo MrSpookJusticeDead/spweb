@@ -332,6 +332,12 @@
             const msg = document.getElementById('delete-msg')
             const { data: { user } } = await sb.auth.getUser()
 
+            if (!user) {
+                msg.textContent = '✗ Not logged in.'
+                document.getElementById('delete-modal').classList.remove('active')
+                return
+            }
+
             // Verify password first
             const { error: authError } = await sb.auth.signInWithPassword({
                 email: user.email,
@@ -348,19 +354,31 @@
             btn.textContent = 'Deleting…'
 
             try {
-                // Call the Edge Function to hard delete
+                // Get fresh session token
+                const { data: { session } } = await sb.auth.getSession()
+
+                if (!session?.access_token) {
+                    throw new Error('No valid session found')
+                }
+
+                console.log('Calling delete function...')
+
+                // Call the Edge Function with proper auth
                 const response = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Authorization': `Bearer ${session.access_token}`,
                         'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
                     },
                 })
 
+                console.log('Response status:', response.status)
                 const result = await response.json()
+                console.log('Response:', result)
 
                 if (!response.ok) {
-                    throw new Error(result.error || 'Failed to delete account')
+                    throw new Error(result.error || `Server error: ${response.status}`)
                 }
 
                 // Sign out and redirect
@@ -371,6 +389,7 @@
                 setTimeout(() => { location.href = '/index.html' }, 2000)
 
             } catch (error) {
+                console.error('Delete error:', error)
                 msg.textContent = '✗ ' + error.message
                 btn.disabled = false
                 btn.textContent = 'Delete My Account'
