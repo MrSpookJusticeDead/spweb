@@ -15,9 +15,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // Only follow same-origin referrers
         if (url.origin !== location.origin) return
 
-        // Normalize: strip .html and trailing slash so both
-        // /charts.html and /charts (Vercel) match the same key
+        // Normalize: strip .html and trailing slash
         let path = url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/'
+
+        // Don't let login/signup override each other — they're siblings,
+        // not a meaningful "back" destination
+        const authPages = ['/login', '/signup']
+        if (authPages.includes(path)) return
 
         const labels = {
             '/':        'Home',
