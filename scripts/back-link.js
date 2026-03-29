@@ -16,17 +16,19 @@ document.addEventListener('DOMContentLoaded', function () {
         if (url.origin !== location.origin) return
 
         const labels = {
-            '/':            'Home',
-            '/index.html':  'Home',
-            '/charts.html': 'Charts',
-            '/upload.html': 'Publish',
-            '/login.html':  'Log In',
-            '/signup.html': 'Sign Up',
-            '/profile.html':'Settings',
-            '/user.html':   'Profile',
+            '/':             'Home',
+            '/index.html':   'Home',
+            '/charts.html':  'Charts',
+            '/upload.html':  'Publish',
+            '/login.html':   'Log In',
+            '/signup.html':  'Sign Up',
+            '/profile.html': 'Settings',
+            '/user.html':    'Profile',
         }
 
-        const name = labels[url.pathname] ?? 'Back'
+        const name = labels[url.pathname]
+        if (!name) return // unrecognized page — keep hardcoded default
+
         el.textContent = '← Back to ' + name
         el.href = ref  // preserve full URL including any ?query params
     } catch (e) {}
