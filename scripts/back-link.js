@@ -2,7 +2,7 @@
 // Dynamically sets "← Back to X" based on the referring page.
 // Requires an <a id="back-link"> element on the page.
 
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
     const el = document.getElementById('back-link')
     if (!el) return
 
@@ -30,4 +30,4 @@
         el.textContent = '← Back to ' + name
         el.href = ref  // preserve full URL including any ?query params
     } catch (e) {}
-})()
+})
