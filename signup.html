@@ -115,7 +115,11 @@
             msg.textContent = ''
             msg.style.color = 'var(--accent)'
 
-            const { data, error } = await sb.auth.signUp({ email, password })
+            const { data, error } = await sb.auth.signUp({
+                email,
+                password,
+                options: { data: { username } }   // ← store username in metadata
+            })
 
             if (error) {
                 msg.textContent = isDuplicateError(error.message)

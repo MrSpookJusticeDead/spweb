@@ -23,7 +23,17 @@
             .select('username')
             .eq('id', user.id)
             .maybeSingle()
+
         username = profile?.username ?? null
+
+        // First login after email confirmation: migrate username from metadata
+        if (!username && user.user_metadata?.username) {
+            const meta_username = user.user_metadata.username
+            const { error: upsertErr } = await sb
+                .from('profiles')
+                .upsert({ id: user.id, username: meta_username }, { onConflict: 'id' })
+            if (!upsertErr) username = meta_username
+        }
     }
 
     // ── Nav: swap "Log In" link for username indicator ────────────────────────
