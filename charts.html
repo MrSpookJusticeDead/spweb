@@ -28,7 +28,6 @@
         }
 
         .chart-row:first-child { border-top: 1px solid var(--border); }
-
         .chart-row:hover { background: var(--skill-bg); margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
 
         .chart-thumb {
@@ -80,11 +79,26 @@
         .chart-by {
             font-size: 0.75rem;
             color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .chart-by span {
             color: var(--accent);
             font-weight: bold;
+        }
+
+        /* ── Publisher micro-avatar ── */
+        .publisher-avatar {
+            width: 18px;
+            height: 18px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            border-radius: 0; /* keep it square — matches site aesthetic */
+            flex-shrink: 0;
+            vertical-align: middle;
+            background: var(--skill-bg);
         }
 
         .chart-right {
@@ -119,7 +133,7 @@
 
         .chart-dl:hover { background: var(--border); color: var(--bg); }
 
-        /* search */
+        /* ── Search ── */
         #search {
             width: 100%;
             padding: 12px;
@@ -141,12 +155,33 @@
             font-size: 1rem;
         }
 
-        /* Auth nav */
+        /* ── Auth nav ── */
         #nav-user { display: none; align-items: center; gap: 8px; }
-        .nav-avatar { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.7rem; background:var(--card-bg); }
-        .nav-signed-label { color:var(--text); font-weight:bold; text-transform:uppercase; font-size:0.9rem; }
-        #nav-logout { color:var(--accent); font-weight:bold; text-transform:uppercase; font-size:0.9rem; text-decoration:none; transition:opacity 0.2s; }
-        #nav-logout:hover { opacity:0.7; text-decoration:underline; }
+
+        /* Nav avatar: shows profile picture or fallback icon */
+        .nav-avatar {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            background: var(--card-bg);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .nav-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .nav-signed-label { color: var(--text); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+        #nav-logout { color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; text-decoration: none; transition: opacity 0.2s; }
+        #nav-logout:hover { opacity: 0.7; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -170,7 +205,8 @@
             <a href="/upload.html">Publish</a>
             <a href="/login.html" id="nav-login">Log In</a>
             <span id="nav-user">
-                <span class="nav-avatar">👤</span>
+                <!-- Avatar swapped in by JS once loaded -->
+                <span class="nav-avatar" id="nav-avatar-wrap">👤</span>
                 <span class="nav-signed-label" id="nav-username">Signed in</span>
                 <a href="#" id="nav-logout">Log Out</a>
             </span>
@@ -212,8 +248,55 @@
 <script src="scripts/auth-nav.js"></script>
 <script>
     // const { createClient } = supabase
-   //  const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+    // const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
+    const DEFAULT_AVATAR = 'imgs/icon.png'
+
+    // ── Resolve avatar URL from storage path ──
+    function resolveAvatar(path) {
+        if (!path) return DEFAULT_AVATAR
+        if (path.startsWith('http')) return path
+        const { data } = sb.storage.from('avatars').getPublicUrl(path)
+        return data.publicUrl
+    }
+
+    // ── Nav: show avatar + username when logged in ──
+    sb.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) return
+
+        const loginLink  = document.getElementById('nav-login')
+        const navUser    = document.getElementById('nav-user')
+        const navName    = document.getElementById('nav-username')
+        const navAvWrap  = document.getElementById('nav-avatar-wrap')
+        const navLogout  = document.getElementById('nav-logout')
+
+        // Fetch profile for username + avatar
+        const { data: profile } = await sb
+            .from('profiles')
+            .select('username, avatar_url')
+            .eq('id', user.id)
+            .maybeSingle()
+
+        if (loginLink)  loginLink.style.display = 'none'
+        if (navUser)    navUser.style.display = 'flex'
+        if (navName)    navName.textContent = profile?.username || 'User'
+
+        // Swap the 👤 emoji for a real img
+        if (navAvWrap) {
+            const avatarUrl = resolveAvatar(profile?.avatar_url)
+            navAvWrap.innerHTML = `<img src="${avatarUrl}" alt="avatar" onerror="this.parentElement.textContent='👤'">`
+        }
+
+        if (navLogout) {
+            navLogout.onclick = async (e) => {
+                e.preventDefault()
+                await sb.auth.signOut()
+                location.reload()
+            }
+        }
+    })
+
+    // ── Chart list ──
     const list   = document.getElementById('chart-list')
     const status = document.getElementById('status-msg')
     const search = document.getElementById('search')
@@ -242,11 +325,11 @@
         container.className = 'chart-list'
 
         charts.forEach(chart => {
-            const coverUrl = getPublicUrl(chart.cover_url)
-            const jsonUrl  = getPublicUrl(chart.json_url)
-            // username from joined profiles, fallback to "anonymous"
-            const username = chart.profiles?.username ?? 'anonymous'
-            const uploaded = chart.created_at
+            const coverUrl    = getPublicUrl(chart.cover_url)
+            const jsonUrl     = getPublicUrl(chart.json_url)
+            const username    = chart.profiles?.username ?? 'anonymous'
+            const avatarUrl   = resolveAvatar(chart.profiles?.avatar_url)
+            const uploaded    = chart.created_at
                 ? new Date(chart.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })
                 : ''
 
@@ -259,10 +342,18 @@
                 <div class="chart-meta">
                     <div class="chart-title">${escHtml(chart.title)}</div>
                     <div class="chart-sub">${escHtml(chart.artist)}</div>
-                    <div class="chart-by">published by <span>${escHtml(username)}</span>${uploaded ? ` · ${uploaded}` : ''}</div>
+                    <div class="chart-by">
+                        <img
+                            class="publisher-avatar"
+                            src="${escHtml(avatarUrl)}"
+                            alt="${escHtml(username)}"
+                            loading="lazy"
+                            onerror="this.src='${DEFAULT_AVATAR}'">
+                        published by <span>${escHtml(username)}</span>${uploaded ? ` · ${uploaded}` : ''}
+                    </div>
                 </div>
                 <div class="chart-right">
-                    ${chart.bpm ? `<div class="chart-bpm">${chart.bpm} BPM</div>` : ''}
+                    ${chart.bpm ? `<div class="chart-bpm">${escHtml(String(chart.bpm))} BPM</div>` : ''}
                     ${jsonUrl ? `<a class="chart-dl" href="${escHtml(jsonUrl)}" download="${escHtml(chart.title)}.json">↓ JSON</a>` : ''}
                 </div>
             `
@@ -273,10 +364,10 @@
     }
 
     async function loadCharts() {
-        // Join profiles to get username
+        // Include avatar_url in the profiles join
         const { data, error } = await sb
             .from('charts')
-            .select('*, profiles(username)')
+            .select('*, profiles(username, avatar_url)')
             .order('created_at', { ascending: false })
 
         if (error) {
