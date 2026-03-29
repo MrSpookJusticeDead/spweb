@@ -369,11 +369,11 @@
             btn.textContent = 'Deleting…'
 
             try {
-                console.log('Calling delete function with token...')
+                console.log('Calling delete function with token WITHOUT JWT Verification...')
                 console.log('User ID:', user.id)
                 console.log('Token starts with:', session.access_token.substring(0, 20) + '...')
 
-                // Call the Edge Function with proper auth
+                // Call the Edge Function with proper 
                 const response = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
                     method: 'POST',
                     headers: {
