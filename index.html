@@ -125,12 +125,6 @@
     <script src="scripts/auth-nav.js"></script>
 </body>
 <script>
-// Handles email confirmation redirect
-supabase.createClient(SUPABASE_URL, SUPABASE_KEY).auth.onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN') {
-        location.href = '/upload.html'
-    }
-})
 </script>
 
 </html>

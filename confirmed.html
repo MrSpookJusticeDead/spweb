@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmed | Spook</title>
+    <link rel="icon" type="image/png" href="imgs/icon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/config.js"></script>
+</head>
+<body>
+<div class="container" style="max-width:440px; padding-top:80px; text-align:center;">
+    <h1 style="font-size:2rem;">✓ Email Confirmed!</h1>
+    <p style="color:var(--text-muted); margin-top:12px;">Your account is ready. Redirecting you now…</p>
+</div>
+<script src="scripts/theme.js"></script>
+<script>
+    // Supabase will land here with the token in the URL hash.
+    // The client picks it up automatically and creates a session.
+    const { createClient } = supabase
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    sb.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+            setTimeout(() => { location.href = '/upload.html' }, 1500)
+        }
+    })
+
+    // Fallback redirect if already signed in
+    setTimeout(() => { location.href = '/upload.html' }, 3000)
+</script>
+</body>
+</html>
+```
+
+**Step 3: Tell Supabase to redirect to this page**
+In **Authentication → Email Templates**, find the confirmation email and change the redirect URL at the end of the link to:
+```
+https://spookwebsite.vercel.app/confirmed.html
