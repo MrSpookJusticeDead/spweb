@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!el) return
 
     const ref = document.referrer
-    if (!ref) return // no referrer — keep the hardcoded default
+    if (!ref) return
 
     try {
         const url = new URL(ref)
@@ -15,21 +15,25 @@ document.addEventListener('DOMContentLoaded', function () {
         // Only follow same-origin referrers
         if (url.origin !== location.origin) return
 
+        // Normalize: strip .html and trailing slash so both
+        // /charts.html and /charts (Vercel) match the same key
+        let path = url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/'
+
         const labels = {
-            '/':             'Home',
-            '/index.html':   'Home',
-            '/charts.html':  'Charts',
-            '/upload.html':  'Publish',
-            '/login.html':   'Log In',
-            '/signup.html':  'Sign Up',
-            '/profile.html': 'Settings',
-            '/user.html':    'Profile',
+            '/':        'Home',
+            '/index':   'Home',
+            '/charts':  'Charts',
+            '/upload':  'Publish',
+            '/login':   'Log In',
+            '/signup':  'Sign Up',
+            '/profile': 'Settings',
+            '/user':    'Profile',
         }
 
-        const name = labels[url.pathname]
+        const name = labels[path]
         if (!name) return // unrecognized page — keep hardcoded default
 
         el.textContent = '← Back to ' + name
-        el.href = ref  // preserve full URL including any ?query params
+        el.href = ref
     } catch (e) {}
 })
