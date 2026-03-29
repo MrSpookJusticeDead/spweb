@@ -79,11 +79,11 @@ body {
 }
 
 header {
+    position: relative;
     margin-bottom: 60px;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--border);
     overflow: hidden;
-    /* clearfix for .header-right float */
 }
 
 .profile {
@@ -266,7 +266,6 @@ footer {
         margin-right: 0;
     }
 
-    /* Adjust toggle position on mobile */
     #theme-toggle {
         top: 10px;
         right: 10px;
@@ -285,7 +284,6 @@ footer {
 
 /* ========== Header Right — Auth Widget ========== */
 
-/* Floats to the top-right corner of the header */
 .header-right {
     float: right;
     margin-left: 20px;
@@ -345,6 +343,21 @@ footer {
     text-decoration: underline;
 }
 
+/* ── Gear icon settings link ── */
+.header-settings {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding-left: 10px;
+    border-left: 1px solid var(--border);
+    transition: color 0.2s;
+}
+
+.header-settings:hover {
+    color: var(--accent);
+}
+
 /* ── Logged-out: Log In + Register buttons ── */
 .header-guest {
     display: flex;
@@ -395,30 +408,41 @@ footer {
     box-shadow: none;
 }
 
-/* ── Mobile: drop below nav, full width ── */
+/* ── Mobile: pin widget to top-right of header ── */
 @media (max-width: 600px) {
     .header-right {
         float: none;
-        margin-left: 0;
-        margin-top: 16px;
-        width: 100%;
+        position: absolute;
+        top: 0;
+        right: 60px; /* clear the fixed theme toggle */
+        margin: 0;
+        width: auto;
     }
 
     .header-user {
-        width: 100%;
-        justify-content: center;
         box-shadow: none;
+        padding: 6px 8px;
+        gap: 6px;
+    }
+
+    .header-username {
+        font-size: 0.75rem;
+    }
+
+    .header-logout {
+        font-size: 0.7rem;
+        padding-left: 6px;
     }
 
     .header-guest {
-        width: 100%;
-        justify-content: center;
+        width: auto;
     }
 
     .header-btn-login,
     .header-btn-register {
-        flex: 1;
-        text-align: center;
+        flex: unset;
+        font-size: 0.75rem;
+        padding: 5px 8px;
         box-shadow: none;
     }
 
@@ -426,19 +450,4 @@ footer {
         transform: none;
         box-shadow: none;
     }
-
-   /* ── Gear icon settings link ── */
-.header-settings {
-    display: flex;
-    align-items: center;
-    color: var(--text-muted);
-    text-decoration: none;
-    padding-left: 10px;
-    border-left: 1px solid var(--border);
-    transition: color 0.2s;
-}
-
-.header-settings:hover {
-    color: var(--accent);
-}
 }
