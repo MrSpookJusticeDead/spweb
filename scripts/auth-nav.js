@@ -114,10 +114,16 @@
     const signupCard = document.getElementById('index-signup-card')
     if (signupCard && user) signupCard.style.display = 'none'
 
+    document.querySelectorAll('a[href="/profile.html"]').forEach(link => {
+        link.style.display = user ? '' : 'none'
+    })
+
     // ── Expose globals ────────────────────────────────────────────────────────
     window._authUser     = user
     window._authUsername = username
 
+
+    
     function escHtml(str) {
         return String(str ?? '')
             .replace(/&/g,'&amp;').replace(/</g,'&lt;')
